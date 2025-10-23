@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const messageArea = document.getElementById("message-area");
     const resultArea = document.getElementById("result-area");
     
-    // Selecionar o dropdown
     const platformSelect = document.getElementById("platform-select");
 
     // Adiciona um "ouvinte" para o evento de submit do formulário
@@ -27,11 +26,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // 2. Iniciar o estado de carregamento
         setLoading(true);
-        // Emoji atualizado para algo mais "fofo" (nuvem)
         showMessage("Conectando aos servidores... ☁️", "loading");
         resultArea.innerHTML = ""; // Limpa resultados anteriores
 
-        // 3. Lógica de seleção de plataforma
+        // 3. Lógica de seleção de plataforma (ATUALIZADA)
         try {
             switch (platform) {
                 case "instagram":
@@ -43,9 +41,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     await downloadInstagram(userUrl);
                     break;
                 
+                // NOVO: Case do TikTok separado
                 case "tiktok":
+                    // Validação específica do TikTok
+                    if (!userUrl.includes("tiktok.com")) {
+                        throw new Error("Este não parece ser um link válido do TikTok.");
+                    }
+                    // Chama a nova função de download
+                    await downloadTikTok(userUrl);
+                    break;
+                
+                // YouTube continua "em breve"
                 case "youtube":
-                    // Mensagem de "em breve" para outras plataformas
                     throw new Error(`Downloads do ${platform.charAt(0).toUpperCase() + platform.slice(1)} ainda não são suportados. Em breve!`);
                 
                 default:
@@ -62,10 +69,43 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     /**
-     * Função refatorada para cuidar APENAS do download do Instagram
+     * Função para cuidar do download do Instagram
      */
     async function downloadInstagram(userUrl) {
         const apiUrl = `https://api.nexfuture.com.br/api/downloads/instagram/mp4?url=${encodeURIComponent(userUrl)}`;
+        
+        const response = await fetch(apiUrl);
+
+        if (!response.ok) {
+            throw new Error(`Falha na API. Link inválido ou offline? (Status: ${response.status})`);
+        }
+
+        const videoBlob = await response.blob();
+
+        if (!videoBlob.type.startsWith('video/')) {
+            throw new Error("A API não retornou um vídeo. O link pode ser privado ou inválido.");
+        }
+
+        const videoUrl = URL.createObjectURL(videoBlob);
+
+        setLoading(false); 
+        showMessage(""); 
+        
+        const filename = `video-ig-${Date.now()}.mp4`; 
+        
+        resultArea.innerHTML = `
+            <a href="${videoUrl}" class="download-link" download="${filename}">
+                Download Concluído! Clique aqui ❤️
+            </a>
+        `;
+    }
+
+    /**
+     * NOVO: Função para cuidar do download do TikTok
+     */
+    async function downloadTikTok(userUrl) {
+        // API fornecida por você
+        const apiUrl = `https://api.nexfuture.com.br/api/downloads/tiktok/mp4?url=${encodeURIComponent(userUrl)}`;
         
         const response = await fetch(apiUrl);
 
@@ -85,9 +125,9 @@ document.addEventListener("DOMContentLoaded", () => {
         setLoading(false); // Sucesso, desliga o loading
         showMessage(""); // Limpa a mensagem
         
-        const filename = `video-ig-${Date.now()}.mp4`; 
+        // Sugere um nome de arquivo
+        const filename = `video-tt-${Date.now()}.mp4`; 
         
-        // Emoji atualizado para coração
         resultArea.innerHTML = `
             <a href="${videoUrl}" class="download-link" download="${filename}">
                 Download Concluído! Clique aqui ❤️
