@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const messageArea = document.getElementById("message-area");
     const resultArea = document.getElementById("result-area");
     
-    // NOVO: Selecionar o dropdown
+    // Selecionar o dropdown
     const platformSelect = document.getElementById("platform-select");
 
     // Adiciona um "ouvinte" para o evento de submit do formulário
@@ -17,7 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault(); 
         
         const userUrl = urlInput.value.trim();
-        // NOVO: Pega o valor da plataforma selecionada
         const platform = platformSelect.value; 
 
         // 1. Validação simples
@@ -28,7 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // 2. Iniciar o estado de carregamento
         setLoading(true);
-        showMessage("Conectando aos servidores... 📡", "loading");
+        // Emoji atualizado para algo mais "fofo" (nuvem)
+        showMessage("Conectando aos servidores... ☁️", "loading");
         resultArea.innerHTML = ""; // Limpa resultados anteriores
 
         // 3. Lógica de seleção de plataforma
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
         } catch (error) {
-            // 7. Tratar erros (captura erros da validação OU do download)
+            // 7. Tratar erros
             console.error(error); 
             setLoading(false);
             showMessage(error.message || "Oops! Algo deu errado. Tente novamente.", "error");
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     /**
-     * NOVO: Função refatorada para cuidar APENAS do download do Instagram
+     * Função refatorada para cuidar APENAS do download do Instagram
      */
     async function downloadInstagram(userUrl) {
         const apiUrl = `https://api.nexfuture.com.br/api/downloads/instagram/mp4?url=${encodeURIComponent(userUrl)}`;
@@ -81,22 +81,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const videoUrl = URL.createObjectURL(videoBlob);
 
-        // 6. Mostrar o resultado (agora dentro desta função)
+        // 6. Mostrar o resultado
         setLoading(false); // Sucesso, desliga o loading
         showMessage(""); // Limpa a mensagem
         
-        // Sugere um nome de arquivo único
         const filename = `video-ig-${Date.now()}.mp4`; 
         
+        // Emoji atualizado para coração
         resultArea.innerHTML = `
             <a href="${videoUrl}" class="download-link" download="${filename}">
-                Download Concluído! Clique aqui ⚡
+                Download Concluído! Clique aqui ❤️
             </a>
         `;
     }
 
 
-    // Função para ligar/desligar o estado de carregamento do botão (nenhuma mudança aqui)
+    // Função para ligar/desligar o estado de carregamento do botão
     function setLoading(isLoading) {
         if (isLoading) {
             downloadButton.disabled = true;
@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Função para mostrar mensagens ao usuário (nenhuma mudança aqui)
+    // Função para mostrar mensagens ao usuário
     function showMessage(message, type = "") {
         messageArea.textContent = message;
         if (type === "error") {
