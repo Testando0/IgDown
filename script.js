@@ -50,7 +50,7 @@ Document.addEventListener("DOMContentLoaded", () => {
                     if (!userUrl.includes("threads.net")) {
                          throw new Error("Este não parece ser um link válido do Threads.");
                     }
-                    await downloadThreads(userUrl); // Chama a função corrigida
+                    await downloadThreads(userUrl); // Chama a função ATUALIZADA
                     break;
                 
                 default:
@@ -131,18 +131,18 @@ Document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * NOVO: Função para cuidar do download do Threads (Corrigida com Proxy CORS)
+     * ATUALIZADA: Função para cuidar do download do Threads (com api.vreden.my.id e Proxy CORS)
      */
     async function downloadThreads(userUrl) {
         
-        // 1. URL da API que retorna o JSON com os links
-        const apiUrl = `https://world-ecletix.onrender.com/api/threads2?url=${encodeURIComponent(userUrl)}`;
+        // 1. URL da NOVA API que retorna o JSON com os links
+        const apiUrl = `https://api.vreden.my.id/api/v1/download/threads?url=${encodeURIComponent(userUrl)}`;
         
-        // 2. Usamos um proxy CORS (allorigins.win) para conseguir chamar a API 'world-ecletix'
+        // 2. Usamos um proxy CORS (allorigins.win) para conseguir chamar a API 'api.vreden.my.id'
         //    O 'api.allorigins.win/raw?url=' baixa o conteúdo da URL fornecida
         const proxyApiUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`;
 
-        showMessage("Conectando ao proxy da API... 📡 (1/3)", "loading");
+        showMessage("Conectando à API... 📡 (1/3)", "loading");
         
         let apiResponse;
         try {
@@ -158,12 +158,12 @@ Document.addEventListener("DOMContentLoaded", () => {
 
         const data = await apiResponse.json();
 
-        // 3. Validação da resposta da API (baseado no seu 'case' original)
-        if (!data || data.statusCode !== 200 || !data.resultado || !Array.isArray(data.resultado.resultado) || data.resultado.resultado.length === 0) {
+        // 3. Validação da resposta da NOVA API
+        if (!data || data.status !== true || !data.result || !Array.isArray(data.result.media) || data.result.media.length === 0) {
             throw new Error("Nenhuma mídia encontrada ou resposta inválida da API do Threads.");
         }
 
-        const midias = data.resultado.resultado;
+        const midias = data.result.media; // Array de mídias
         resultArea.innerHTML = ""; // Limpa área de resultados
         showMessage(`Mídia(s) encontrada(s): ${midias.length}. Baixando... ⏳ (2/3)`, "loading");
 
@@ -171,7 +171,7 @@ Document.addEventListener("DOMContentLoaded", () => {
         
         // 4. Iteramos por cada mídia encontrada (vídeo ou imagem de um carrossel, por ex.)
         for (const item of midias) {
-            const mediaUrl = item.link; // Este é o link direto para o cdn.facebook.com/...
+            const mediaUrl = item.url; // Este é o link direto (ex: dl.snapcdn.app/...)
             if (!mediaUrl) continue;
             
             mediaCount++;
@@ -180,6 +180,7 @@ Document.addEventListener("DOMContentLoaded", () => {
             try {
                 // 5. USAMOS O PROXY DE NOVO!
                 // Desta vez, para baixar o *arquivo* (vídeo/imagem) que está no CDN
+                // Isso é essencial para o 'download' funcionar
                 const mediaProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(mediaUrl)}`;
 
                 const mediaResponse = await fetch(mediaProxyUrl);
@@ -191,16 +192,15 @@ Document.addEventListener("DOMContentLoaded", () => {
                 // 6. Pegamos o Blob (o arquivo em si)
                 const mediaBlob = await mediaResponse.blob();
 
-                // 7. Criamos um Object URL local (Exatamente como nas funções do IG e TT)
-                //    Isso permite que o atributo 'download' funcione
+                // 7. Criamos um Object URL local
                 const blobUrl = URL.createObjectURL(mediaBlob);
                 
-                // Detecta o tipo e define o nome do arquivo
-                const isVideo = mediaBlob.type.startsWith('video/');
-                const extension = isVideo ? 'mp4' : 'jpg'; // Suposição simples
+                // 8. Detecta o tipo (fornecido pela API) e define o nome do arquivo
+                const isVideo = (item.type === 'video');
+                const extension = isVideo ? 'mp4' : 'jpg'; // A API já nos diz o tipo
                 const filename = `media-threads-${Date.now()}-${mediaCount}.${extension}`;
 
-                // 8. Criar o link de download final
+                // 9. Criar o link de download final
                 const linkElement = document.createElement('a');
                 linkElement.href = blobUrl;
                 linkElement.className = "download-link";
@@ -223,7 +223,7 @@ Document.addEventListener("DOMContentLoaded", () => {
              throw new Error("API respondeu, mas não foi possível extrair mídias válidas.");
         }
 
-        // 9. Sucesso
+        // 10. Sucesso
         setLoading(false);
         showMessage("Downloads prontos! (3/3)", ""); // Limpa mensagem de loading
 
