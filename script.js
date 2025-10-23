@@ -1,4 +1,4 @@
-Document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     
     // Seleciona os elementos do HTML
     const form = document.getElementById("download-form");
@@ -41,6 +41,7 @@ Document.addEventListener("DOMContentLoaded", () => {
                     await downloadInstagram(userUrl);
                     break;
                 
+                // NOVO: Case do TikTok separado
                 case "tiktok":
                     // Validação específica do TikTok
                     if (!userUrl.includes("tiktok.com")) {
@@ -50,15 +51,9 @@ Document.addEventListener("DOMContentLoaded", () => {
                     await downloadTikTok(userUrl);
                     break;
                 
-                // ATUALIZADO: Case do YouTube
+                // YouTube continua "em breve"
                 case "youtube":
-                    // Validação específica do YouTube (aceita links curtos e longos)
-                    if (!userUrl.includes("youtube.com") && !userUrl.includes("youtu.be")) {
-                         throw new Error("Este não parece ser um link válido do YouTube.");
-                    }
-                    // Chama a nova função de download
-                    await downloadYouTube(userUrl);
-                    break;
+                    throw new Error(`Downloads do ${platform.charAt(0).toUpperCase() + platform.slice(1)} ainda não são suportados. Em breve!`);
                 
                 default:
                     throw new Error("Plataforma desconhecida.");
@@ -106,9 +101,10 @@ Document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * Função para cuidar do download do TikTok
+     * NOVO: Função para cuidar do download do TikTok
      */
     async function downloadTikTok(userUrl) {
+        // API fornecida por você
         const apiUrl = `https://api.nexfuture.com.br/api/downloads/tiktok/mp4?url=${encodeURIComponent(userUrl)}`;
         
         const response = await fetch(apiUrl);
@@ -125,46 +121,12 @@ Document.addEventListener("DOMContentLoaded", () => {
 
         const videoUrl = URL.createObjectURL(videoBlob);
 
-        setLoading(false);
-        showMessage("");
-        
-        const filename = `video-tt-${Date.now()}.mp4`; 
-        
-        resultArea.innerHTML = `
-            <a href="${videoUrl}" class="download-link" download="${filename}">
-                Download Concluído! Clique aqui ❤️
-            </a>
-        `;
-    }
-
-    /**
-     * NOVO: Função para cuidar do download do YouTube
-     */
-    async function downloadYouTube(userUrl) {
-        // API fornecida por você
-        const apiUrl = `https://api.nexfuture.com.br/api/downloads/youtube/mp4?url=${encodeURIComponent(userUrl)}`;
-        
-        const response = await fetch(apiUrl);
-
-        if (!response.ok) {
-            throw new Error(`Falha na API. Link inválido ou offline? (Status: ${response.status})`);
-        }
-
-        const videoBlob = await response.blob();
-
-        // Validação (vídeos do YouTube às vezes vêm como 'video/mp4; codecs="..."')
-        if (!videoBlob.type.startsWith('video/')) {
-            throw new Error("A API não retornou um vídeo. O link pode ser privado ou inválido.");
-        }
-
-        const videoUrl = URL.createObjectURL(videoBlob);
-
         // 6. Mostrar o resultado
         setLoading(false); // Sucesso, desliga o loading
         showMessage(""); // Limpa a mensagem
         
         // Sugere um nome de arquivo
-        const filename = `video-yt-${Date.now()}.mp4`; // 'yt' para YouTube
+        const filename = `video-tt-${Date.now()}.mp4`; 
         
         resultArea.innerHTML = `
             <a href="${videoUrl}" class="download-link" download="${filename}">
