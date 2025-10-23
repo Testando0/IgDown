@@ -1,6 +1,6 @@
 Document.addEventListener("DOMContentLoaded", () => {
     
-    // Seleciona os elementos do HTML
+    // Seleciona os elementos do HTML (mantidos)
     const form = document.getElementById("download-form");
     const urlInput = document.getElementById("url-input");
     const downloadButton = document.getElementById("download-button");
@@ -8,7 +8,6 @@ Document.addEventListener("DOMContentLoaded", () => {
     const buttonLoader = downloadButton.querySelector(".button-loader");
     const messageArea = document.getElementById("message-area");
     const resultArea = document.getElementById("result-area");
-    
     const platformSelect = document.getElementById("platform-select");
 
     // Adiciona um "ouvinte" para o evento de submit do formulário
@@ -26,7 +25,7 @@ Document.addEventListener("DOMContentLoaded", () => {
 
         // 2. Iniciar o estado de carregamento
         setLoading(true);
-        showMessage("Conectando aos servidores... ☁️", "loading");
+        showMessage("Processando... ⚡", "loading"); // Mensagem alterada para refletir a nova lógica
         resultArea.innerHTML = ""; // Limpa resultados anteriores
 
         // 3. Lógica de seleção de plataforma
@@ -50,9 +49,12 @@ Document.addEventListener("DOMContentLoaded", () => {
                     if (!userUrl.includes("kwai.com") && !userUrl.includes("kuaishou.com")) {
                          throw new Error("Este não parece ser um link válido do Kwai.");
                     }
-                    // CHAMANDO A VERSÃO SIMPLIFICADA E REVISADA
-                    await downloadKwai(userUrl); 
-                    break;
+                    // CHAMADA PARA A NOVA FUNÇÃO DE REDIRECIONAMENTO
+                    downloadKwaiSimple(userUrl); 
+                    // SAÍDA: O downloadKwaisimple faz o redirecionamento e a função retorna
+                    setLoading(false);
+                    showMessage("Tentando iniciar o download... Verifique o pop-up ou a barra de downloads.", "loading");
+                    return; // Retorna para evitar o tratamento de erros catch padrão
                 
                 default:
                     throw new Error("Plataforma desconhecida ou ainda não suportada.");
@@ -65,30 +67,31 @@ Document.addEventListener("DOMContentLoaded", () => {
             showMessage(error.message || "Oops! Algo deu errado. Tente novamente.", "error");
             resultArea.innerHTML = "";
         }
+        
+        // Finaliza o carregamento para Instagram/TikTok se tiver sucesso no try
+        setLoading(false); 
+        showMessage(""); 
     });
 
     /**
-     * Função para cuidar do download do Instagram
+     * Função para cuidar do download do Instagram (mantida)
      */
     async function downloadInstagram(userUrl) {
+        // ... (código mantido)
         const apiUrl = `https://api.nexfuture.com.br/api/downloads/instagram/mp4?url=${encodeURIComponent(userUrl)}`;
         
         const response = await fetch(apiUrl);
-
+        // ... (código mantido)
         if (!response.ok) {
             throw new Error(`Falha na API (IG). Link inválido ou offline? (Status: ${response.status})`);
         }
 
         const videoBlob = await response.blob();
-
         if (!videoBlob.type.startsWith('video/')) {
             throw new Error("A API (IG) não retornou um vídeo. O link pode ser privado ou inválido.");
         }
 
         const videoUrl = URL.createObjectURL(videoBlob);
-
-        setLoading(false); 
-        showMessage(""); 
         
         const filename = `video-ig-${Date.now()}.mp4`; 
         
@@ -100,27 +103,24 @@ Document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * Função para cuidar do download do TikTok
+     * Função para cuidar do download do TikTok (mantida)
      */
     async function downloadTikTok(userUrl) {
+        // ... (código mantido)
         const apiUrl = `https://api.nexfuture.com.br/api/downloads/tiktok/mp4?url=${encodeURIComponent(userUrl)}`;
         
         const response = await fetch(apiUrl);
-
+        // ... (código mantido)
         if (!response.ok) {
             throw new Error(`Falha na API (TT). Link inválido ou offline? (Status: ${response.status})`);
         }
 
         const videoBlob = await response.blob();
-
         if (!videoBlob.type.startsWith('video/')) {
             throw new Error("A API (TT) não retornou um vídeo. O link pode ser privado ou inválido.");
         }
 
         const videoUrl = URL.createObjectURL(videoBlob);
-
-        setLoading(false); 
-        showMessage(""); 
         
         const filename = `video-tt-${Date.now()}.mp4`; 
         
@@ -132,53 +132,31 @@ Document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * ÚLTIMA TENTATIVA: Função para cuidar do download do Kwai
-     * (Simplificada, remove a checagem rigorosa de MIME Type que pode estar falhando)
+     * NOVO MÉTODO (Simples): Função para cuidar do download do Kwai
+     * Esta função não usa fetch/blob, mas redireciona o usuário (ou abre em nova aba)
+     * para forçar o download direto da API.
      */
-    async function downloadKwai(userUrl) {
-        // Usa a API do Kwai fornecida
+    function downloadKwaiSimple(userUrl) {
+        // 1. URL da API
         const apiUrl = `https://api.nexfuture.com.br/api/downloads/kwai/mp4?url=${encodeURIComponent(userUrl)}`;
         
-        // Tentamos adicionar 'Accept' para garantir que o servidor saiba o que enviar
-        const response = await fetch(apiUrl, {
-            headers: {
-                'Accept': 'video/mp4, application/octet-stream, */*' 
-            }
-        });
-
-        if (!response.ok) {
-            // Se o status for 4xx/5xx, lança o erro (API offline ou link ruim)
-            throw new Error(`Falha na API (Kwai). Link inválido ou offline? (Status: ${response.status})`);
-        }
+        // 2. Cria um link temporário, o clica e o remove
+        const linkElement = document.createElement('a');
+        linkElement.href = apiUrl;
         
-        // AQUI ESTÁ A CHAVE: Obter o Blob sem verificar o tipo, confiando que é o arquivo.
-        const videoBlob = await response.blob();
+        // Define o nome, embora o servidor deva fornecer o Content-Disposition
+        linkElement.download = `video-kwai-${Date.now()}.mp4`; 
         
-        // Se o Blob tiver tamanho 0, a API pode ter retornado um corpo vazio ou um erro.
-        if (videoBlob.size === 0) {
-             throw new Error("A API retornou um arquivo vazio (0 bytes). Link inválido ou API sem resposta.");
-        }
-
-        // Assumimos que o arquivo é um MP4 (extensão fornecida pela API na URL)
-        const extension = 'mp4'; 
+        // É essencial adicionar e clicar o elemento para que o atributo 'download' funcione
+        document.body.appendChild(linkElement);
+        linkElement.click();
+        document.body.removeChild(linkElement);
         
-        const videoUrl = URL.createObjectURL(videoBlob);
-
-        setLoading(false); 
-        showMessage(""); // Limpa a mensagem de carregamento
-        
-        // Nome do arquivo específico do Kwai
-        const filename = `video-kwai-${Date.now()}.${extension}`; 
-        
-        // Cria o link de download
-        resultArea.innerHTML = `
-            <a href="${videoUrl}" class="download-link" download="${filename}">
-                Download Kwai Pronto! Clique aqui ❤️
-            </a>
-        `;
+        // NOTA: O estado de carregamento deve ser removido pelo evento 'submit' que chamou esta função.
     }
 
-    // Função para ligar/desligar o estado de carregamento do botão
+
+    // Função para ligar/desligar o estado de carregamento do botão (mantida)
     function setLoading(isLoading) {
         if (isLoading) {
             downloadButton.disabled = true;
@@ -191,7 +169,7 @@ Document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Função para mostrar mensagens ao usuário
+    // Função para mostrar mensagens ao usuário (mantida)
     function showMessage(message, type = "") {
         messageArea.textContent = message;
         if (type === "error") {
