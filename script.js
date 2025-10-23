@@ -29,38 +29,29 @@ Document.addEventListener("DOMContentLoaded", () => {
         showMessage("Conectando aos servidores... ☁️", "loading");
         resultArea.innerHTML = ""; // Limpa resultados anteriores
 
-        // 3. Lógica de seleção de plataforma (ATUALIZADA)
+        // 3. Lógica de seleção de plataforma
         try {
             switch (platform) {
                 case "instagram":
-                    // Validação específica do Instagram
                     if (!userUrl.includes("instagram.com")) {
                         throw new Error("Este não parece ser um link válido do Instagram.");
                     }
-                    // Chama a função de download específica
                     await downloadInstagram(userUrl);
                     break;
                 
                 case "tiktok":
-                    // Validação específica do TikTok
                     if (!userUrl.includes("tiktok.com")) {
                         throw new Error("Este não parece ser um link válido do TikTok.");
                     }
-                    // Chama a nova função de download
                     await downloadTikTok(userUrl);
                     break;
 
-                // NOVO: Case do Threads
                 case "threads":
-                    // Validação específica do Threads
                     if (!userUrl.includes("threads.net")) {
                          throw new Error("Este não parece ser um link válido do Threads.");
                     }
-                    // Chama a nova função de download
-                    await downloadThreads(userUrl);
+                    await downloadThreads(userUrl); // Chama a função corrigida
                     break;
-                
-                // REMOVIDO: Case do YouTube
                 
                 default:
                     throw new Error("Plataforma desconhecida ou ainda não suportada.");
@@ -140,66 +131,102 @@ Document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * NOVO: Função para cuidar do download do Threads
+     * NOVO: Função para cuidar do download do Threads (Corrigida com Proxy CORS)
      */
     async function downloadThreads(userUrl) {
-        // API baseada no case fornecido
+        
+        // 1. URL da API que retorna o JSON com os links
         const apiUrl = `https://world-ecletix.onrender.com/api/threads2?url=${encodeURIComponent(userUrl)}`;
         
-        const response = await fetch(apiUrl);
+        // 2. Usamos um proxy CORS (allorigins.win) para conseguir chamar a API 'world-ecletix'
+        //    O 'api.allorigins.win/raw?url=' baixa o conteúdo da URL fornecida
+        const proxyApiUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`;
 
-        if (!response.ok) {
-            throw new Error(`Falha na API (Threads). Link inválido ou offline? (Status: ${response.status})`);
+        showMessage("Conectando ao proxy da API... 📡 (1/3)", "loading");
+        
+        let apiResponse;
+        try {
+            // Tenta buscar o JSON da API do Threads através do proxy
+            apiResponse = await fetch(proxyApiUrl);
+        } catch (e) {
+            throw new Error("Falha ao conectar no proxy CORS. Verifique a conexão ou o proxy.");
         }
 
-        const data = await response.json();
+        if (!apiResponse.ok) {
+            throw new Error(`Falha na API (Threads) via Proxy. (Status: ${apiResponse.status})`);
+        }
 
-        // Validação da resposta da API, baseada no case
+        const data = await apiResponse.json();
+
+        // 3. Validação da resposta da API (baseado no seu 'case' original)
         if (!data || data.statusCode !== 200 || !data.resultado || !Array.isArray(data.resultado.resultado) || data.resultado.resultado.length === 0) {
             throw new Error("Nenhuma mídia encontrada ou resposta inválida da API do Threads.");
         }
 
         const midias = data.resultado.resultado;
-        let foundMedia = false;
+        resultArea.innerHTML = ""; // Limpa área de resultados
+        showMessage(`Mídia(s) encontrada(s): ${midias.length}. Baixando... ⏳ (2/3)`, "loading");
+
+        let mediaCount = 0;
         
-        // Limpa a área de resultados (já feito no 'submit', mas garantimos aqui)
-        resultArea.innerHTML = ""; 
-
-        // Itera sobre todas as mídias encontradas (carrossel)
+        // 4. Iteramos por cada mídia encontrada (vídeo ou imagem de um carrossel, por ex.)
         for (const item of midias) {
-            const link = item.link;
-            if (!link) continue;
-
-            foundMedia = true;
-
-            // Detecta se o link parece ser um vídeo
-            const isVideo = /\.(mp4|webm|mov)(\?|$)/i.test(link) || link.includes("/video");
+            const mediaUrl = item.link; // Este é o link direto para o cdn.facebook.com/...
+            if (!mediaUrl) continue;
             
-            // Determina a extensão para o nome do arquivo
-            const extension = isVideo ? 'mp4' : 'jpg'; // Supomos jpg para imagens
-            const filename = `media-threads-${Date.now()}.${extension}`; 
+            mediaCount++;
+            showMessage(`Baixando item ${mediaCount}/${midias.length}...`, "loading");
 
-            // Cria um link de download para cada item
-            const linkElement = document.createElement('a');
-            linkElement.href = link;
-            linkElement.className = "download-link";
-            linkElement.download = filename; // Atributo download sugere o nome do arquivo
-            linkElement.textContent = `Download ${isVideo ? 'Vídeo' : 'Imagem'} ❤️`;
-            
-            // Adiciona um target="_blank" para abrir em nova aba (melhor UX para links diretos)
-            linkElement.target = "_blank";
-            linkElement.rel = "noopener noreferrer";
-            
-            resultArea.appendChild(linkElement);
+            try {
+                // 5. USAMOS O PROXY DE NOVO!
+                // Desta vez, para baixar o *arquivo* (vídeo/imagem) que está no CDN
+                const mediaProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(mediaUrl)}`;
+
+                const mediaResponse = await fetch(mediaProxyUrl);
+                
+                if (!mediaResponse.ok) {
+                    throw new Error(`Falha ao baixar mídia do item ${mediaCount}`);
+                }
+
+                // 6. Pegamos o Blob (o arquivo em si)
+                const mediaBlob = await mediaResponse.blob();
+
+                // 7. Criamos um Object URL local (Exatamente como nas funções do IG e TT)
+                //    Isso permite que o atributo 'download' funcione
+                const blobUrl = URL.createObjectURL(mediaBlob);
+                
+                // Detecta o tipo e define o nome do arquivo
+                const isVideo = mediaBlob.type.startsWith('video/');
+                const extension = isVideo ? 'mp4' : 'jpg'; // Suposição simples
+                const filename = `media-threads-${Date.now()}-${mediaCount}.${extension}`;
+
+                // 8. Criar o link de download final
+                const linkElement = document.createElement('a');
+                linkElement.href = blobUrl;
+                linkElement.className = "download-link";
+                linkElement.download = filename; // Agora o 'download' funciona!
+                linkElement.textContent = `Download ${isVideo ? 'Vídeo' : 'Imagem'} ${mediaCount} ❤️`;
+                
+                resultArea.appendChild(linkElement); // Adiciona o link à área de resultados
+                
+            } catch (err) {
+                console.error(err);
+                // Se um item falhar, mostra um erro mas continua para o próximo
+                const errorElement = document.createElement('p');
+                errorElement.textContent = `Falha ao baixar item ${mediaCount}.`;
+                errorElement.className = "error-message";
+                resultArea.appendChild(errorElement);
+            }
+        }
+        
+        if (mediaCount === 0) {
+             throw new Error("API respondeu, mas não foi possível extrair mídias válidas.");
         }
 
-        if (!foundMedia) {
-            throw new Error("A API do Threads respondeu, mas não foi possível encontrar links de mídia válidos.");
-        }
+        // 9. Sucesso
+        setLoading(false);
+        showMessage("Downloads prontos! (3/3)", ""); // Limpa mensagem de loading
 
-        // 6. Mostrar o resultado
-        setLoading(false); // Sucesso, desliga o loading
-        showMessage(""); // Limpa a mensagem de "carregando"
     }
 
 
