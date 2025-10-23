@@ -1,14 +1,15 @@
-/* Configurações Globais Futuristas */
+/* Configurações Globais Fofas & Futuras */
 :root {
-    --bg-color: #0D0D1E; /* Azul escuro/preto */
-    --container-color: rgba(10, 10, 30, 0.75); /* Painel de vidro escuro */
-    --primary-cyan: #00FFFF; /* Ciano neon */
-    --primary-magenta: #FF00FF; /* Magenta neon */
-    --text-color: #E0E0FF; /* Texto (branco-azulado) */
-    --text-light: #9A9AEB; /* Texto secundário (lavanda) */
-    --border-color: rgba(0, 255, 255, 0.3); /* Borda ciano sutil */
-    --success-green: #00FF7F; /* Verde spring */
-    --error-red: #F87171; /* Vermelho suave (mantido) */
+    /* Nova paleta "fofa" com base no vermelho */
+    --bg-color: #2C2528; /* Ameixa/Carvão escuro */
+    --container-color: rgba(60, 50, 55, 0.75); /* Vidro escuro (tom quente) */
+    --primary-red: #FF6B6B; /* Vermelho morango (fofo) */
+    --primary-pink: #FFC0CB; /* Rosa claro (fofo) */
+    --text-color: #FCEFF2; /* Branco-rosado (texto principal) */
+    --text-light: #E0C0C8; /* Rosa-acinzentado (texto secundário) */
+    --border-color: rgba(255, 107, 107, 0.3); /* Borda vermelha sutil */
+    --success-mint: #A6F6C8; /* Verde menta (sucesso fofo) */
+    --error-orange: #FFA07A; /* Laranja claro/Salmão (erro fofo) */
 }
 
 * {
@@ -18,8 +19,8 @@
 }
 
 body {
-    /* Nova fonte tech */
-    font-family: 'Share Tech Mono', 'Poppins', sans-serif;
+    /* Fonte Poppins (mais fofa) priorizada */
+    font-family: 'Poppins', 'Share Tech Mono', sans-serif;
     background-color: var(--bg-color);
     background-image: linear-gradient(
         var(--border-color) 1px, 
@@ -30,7 +31,8 @@ body {
         var(--border-color) 1px, 
         var(--bg-color) 1px
     );
-    background-size: 40px 40px; /* Efeito de grade de fundo */
+    /* Grade de fundo maior (menos "tech") */
+    background-size: 60px 60px; 
     color: var(--text-color);
     display: flex;
     justify-content: center;
@@ -43,10 +45,11 @@ body {
 .container {
     background-color: var(--container-color);
     padding: 30px 40px;
-    border-radius: 10px; /* Menos arredondado */
-    /* Efeito de vidro */
+    /* Mais arredondado (mais fofo) */
+    border-radius: 16px; 
     backdrop-filter: blur(10px); 
-    box-shadow: 0 0 35px rgba(0, 255, 255, 0.3), 0 0 10px rgba(255, 0, 255, 0.2); /* Brilho neon */
+    /* Sombra atualizada para paleta vermelha/rosa */
+    box-shadow: 0 0 35px var(--border-color), 0 0 10px rgba(255, 192, 203, 0.3); 
     text-align: center;
     max-width: 500px;
     width: 100%;
@@ -54,10 +57,11 @@ body {
 }
 
 h1 {
-    color: var(--primary-cyan);
-    text-shadow: 0 0 8px var(--primary-cyan), 0 0 16px var(--primary-magenta);
+    /* Cor e sombra atualizadas */
+    color: var(--primary-red);
+    text-shadow: 0 0 10px var(--primary-red), 0 0 16px var(--primary-pink);
     margin-bottom: 10px;
-    letter-spacing: 2px;
+    letter-spacing: 1px; /* Um pouco menos espaçado */
 }
 
 p {
@@ -72,7 +76,7 @@ p {
     gap: 15px;
 }
 
-/* NOVO: Wrapper para o Select */
+/* Wrapper para o Select */
 .select-wrapper {
     position: relative;
     width: 100%;
@@ -85,39 +89,44 @@ p {
     top: 50%;
     right: 20px;
     transform: translateY(-50%);
-    color: var(--primary-cyan);
+    /* Cor atualizada */
+    color: var(--primary-red);
     pointer-events: none;
-    text-shadow: 0 0 5px var(--primary-cyan);
+    text-shadow: 0 0 5px var(--primary-red);
 }
 
-/* NOVO: Estilo do Select */
+/* Estilo do Select */
 #platform-select {
     width: 100%;
     padding: 15px;
     border: 2px solid var(--border-color);
-    border-radius: 8px;
+    /* Mais arredondado */
+    border-radius: 12px;
     background: rgba(0,0,0,0.3);
     color: var(--text-color);
     font-size: 16px;
-    font-family: 'Share Tech Mono', 'Poppins', sans-serif;
+    /* Fonte atualizada */
+    font-family: 'Poppins', 'Share Tech Mono', sans-serif;
     -webkit-appearance: none;
     -moz-appearance: none;
-    appearance: none; /* Remove estilo padrão */
+    appearance: none; 
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 #platform-select:focus {
     outline: none;
-    border-color: var(--primary-magenta);
-    box-shadow: 0 0 10px var(--primary-magenta);
+    /* Cor de foco atualizada */
+    border-color: var(--primary-pink);
+    box-shadow: 0 0 10px var(--primary-pink);
 }
 
 #url-input {
     width: 100%;
     padding: 15px;
     border: 2px solid var(--border-color);
-    border-radius: 8px;
+    /* Mais arredondado */
+    border-radius: 12px;
     background: rgba(0,0,0,0.3);
     color: var(--text-color);
     font-size: 16px;
@@ -126,18 +135,20 @@ p {
 
 #url-input:focus {
     outline: none;
-    border-color: var(--primary-magenta);
-    box-shadow: 0 0 10px var(--primary-magenta);
+    /* Cor de foco atualizada */
+    border-color: var(--primary-pink);
+    box-shadow: 0 0 10px var(--primary-pink);
 }
 
 #download-button {
     width: 100%;
     padding: 15px;
     border: none;
-    border-radius: 8px;
-    /* Gradiente neon */
-    background: linear-gradient(45deg, var(--primary-magenta), var(--primary-cyan));
-    color: #0D0D1E; /* Texto escuro para contraste */
+    /* Mais arredondado */
+    border-radius: 12px;
+    /* Gradiente atualizado para vermelho/rosa */
+    background: linear-gradient(45deg, var(--primary-red), var(--primary-pink));
+    color: var(--bg-color); /* Contraste com o fundo escuro */
     font-size: 18px;
     font-weight: 600;
     cursor: pointer;
@@ -147,12 +158,13 @@ p {
     justify-content: center;
     align-items: center;
     height: 54px; 
-    font-family: 'Share Tech Mono', 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Share Tech Mono', sans-serif;
 }
 
 #download-button:hover:not(:disabled) {
     transform: translateY(-3px);
-    box-shadow: 0 0 20px var(--primary-cyan), 0 0 10px var(--primary-magenta);
+    /* Sombra de hover atualizada */
+    box-shadow: 0 0 20px var(--primary-red), 0 0 10px var(--primary-pink);
 }
 
 #download-button:disabled {
@@ -166,7 +178,8 @@ p {
     width: 24px;
     height: 24px;
     border: 3px solid rgba(0, 0, 0, 0.3);
-    border-top-color: #0D0D1E;
+    /* Cor do loader atualizada para o texto escuro */
+    border-top-color: var(--bg-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -184,38 +197,45 @@ p {
 }
 
 .loading-message {
-    color: var(--primary-cyan);
-    text-shadow: 0 0 5px var(--primary-cyan);
+    /* Cor de loading atualizada */
+    color: var(--primary-red);
+    text-shadow: 0 0 5px var(--primary-red);
 }
 
 .error-message {
-    color: var(--error-red);
+    /* Cor de erro atualizada */
+    color: var(--error-orange);
     font-weight: 600;
-    text-shadow: 0 0 5px var(--error-red);
+    text-shadow: 0 0 5px var(--error-orange);
 }
 
 #result-area {
     margin-top: 25px;
 }
 
-/* Link de Download Final (estilo "holográfico") */
+/* Link de Download Final */
 .download-link {
     display: inline-block;
     padding: 12px 25px;
     text-decoration: none;
     background: transparent;
-    border: 2px solid var(--success-green);
-    color: var(--success-green);
+    /* Cor de sucesso (borda) atualizada */
+    border: 2px solid var(--success-mint);
+    /* Cor de sucesso (texto) atualizada */
+    color: var(--success-mint);
     font-weight: 600;
-    border-radius: 8px;
+    /* Mais arredondado */
+    border-radius: 12px;
     transition: all 0.3s ease;
-    box-shadow: 0 0 15px rgba(0, 255, 127, 0.4);
+    /* Sombra de sucesso atualizada */
+    box-shadow: 0 0 15px rgba(166, 246, 200, 0.5);
     animation: fadeIn 0.5s ease;
-    text-shadow: 0 0 5px var(--success-green);
+    text-shadow: 0 0 5px var(--success-mint);
 }
 
 .download-link:hover {
-    background: rgba(0, 255, 127, 0.1);
+    /* Fundo de hover de sucesso atualizado */
+    background: rgba(166, 246, 200, 0.15);
     transform: scale(1.05);
 }
 
