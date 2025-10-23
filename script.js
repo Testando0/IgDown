@@ -50,6 +50,7 @@ Document.addEventListener("DOMContentLoaded", () => {
                     if (!userUrl.includes("kwai.com") && !userUrl.includes("kuaishou.com")) {
                          throw new Error("Este não parece ser um link válido do Kwai.");
                     }
+                    // CHAMANDO A VERSÃO SIMPLIFICADA E REVISADA
                     await downloadKwai(userUrl); 
                     break;
                 
@@ -131,37 +132,35 @@ Document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * NOVA: Função para cuidar do download do Kwai
-     * (Versão com tratamento de erro e tipo de mídia mais robusto)
+     * ÚLTIMA TENTATIVA: Função para cuidar do download do Kwai
+     * (Simplificada, remove a checagem rigorosa de MIME Type que pode estar falhando)
      */
     async function downloadKwai(userUrl) {
         // Usa a API do Kwai fornecida
         const apiUrl = `https://api.nexfuture.com.br/api/downloads/kwai/mp4?url=${encodeURIComponent(userUrl)}`;
         
-        // 1. Otimização: Adiciona cabeçalhos para aceitar formatos binários
+        // Tentamos adicionar 'Accept' para garantir que o servidor saiba o que enviar
         const response = await fetch(apiUrl, {
             headers: {
-                'Accept': 'video/mp4, application/octet-stream' 
+                'Accept': 'video/mp4, application/octet-stream, */*' 
             }
         });
 
         if (!response.ok) {
-            // Se o status for 4xx/5xx, lança o erro
+            // Se o status for 4xx/5xx, lança o erro (API offline ou link ruim)
             throw new Error(`Falha na API (Kwai). Link inválido ou offline? (Status: ${response.status})`);
         }
         
+        // AQUI ESTÁ A CHAVE: Obter o Blob sem verificar o tipo, confiando que é o arquivo.
         const videoBlob = await response.blob();
         
-        // 2. Otimização: Tratamento do tipo (MIME Type)
-        // Pega o Content-Type do cabeçalho ou do Blob.
-        const contentType = response.headers.get('Content-Type') || videoBlob.type;
-        
-        // Verifica se o tipo é vídeo OU um tipo binário genérico ('application/octet-stream')
-        if (!contentType.startsWith('video/') && !contentType.includes('octet-stream')) {
-             throw new Error(`A API (Kwai) retornou um tipo inválido (${contentType}). O link pode ser privado ou inválido.`);
+        // Se o Blob tiver tamanho 0, a API pode ter retornado um corpo vazio ou um erro.
+        if (videoBlob.size === 0) {
+             throw new Error("A API retornou um arquivo vazio (0 bytes). Link inválido ou API sem resposta.");
         }
-        
-        const extension = 'mp4'; // Assumimos MP4 para o download do Kwai via esta API
+
+        // Assumimos que o arquivo é um MP4 (extensão fornecida pela API na URL)
+        const extension = 'mp4'; 
         
         const videoUrl = URL.createObjectURL(videoBlob);
 
@@ -171,6 +170,7 @@ Document.addEventListener("DOMContentLoaded", () => {
         // Nome do arquivo específico do Kwai
         const filename = `video-kwai-${Date.now()}.${extension}`; 
         
+        // Cria o link de download
         resultArea.innerHTML = `
             <a href="${videoUrl}" class="download-link" download="${filename}">
                 Download Kwai Pronto! Clique aqui ❤️
