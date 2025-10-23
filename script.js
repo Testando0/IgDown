@@ -12,7 +12,8 @@ Document.addEventListener("DOMContentLoaded", () => {
     const platformSelect = document.getElementById("platform-select");
 
     // Adiciona um "ouvinte" para o evento de submit do formulário
-    form.addEventListener("submit", async (event) => {
+    // (Não precisamos mais de 'async' aqui)
+    form.addEventListener("submit", (event) => {
         event.preventDefault(); 
         
         const userUrl = urlInput.value.trim();
@@ -26,43 +27,45 @@ Document.addEventListener("DOMContentLoaded", () => {
 
         // 2. Iniciar o estado de carregamento
         setLoading(true);
-        showMessage("Conectando aos servidores... ☁️", "loading");
+        showMessage("Preparando seu download... 🔗", "loading");
         resultArea.innerHTML = ""; // Limpa resultados anteriores
 
         // 3. Lógica de seleção de plataforma (ATUALIZADA)
         try {
+            // Validações de plataforma
             switch (platform) {
                 case "instagram":
-                    // Validação específica do Instagram
                     if (!userUrl.includes("instagram.com")) {
                         throw new Error("Este não parece ser um link válido do Instagram.");
                     }
-                    // Chama a função de download específica
-                    await downloadInstagram(userUrl);
                     break;
                 
                 case "tiktok":
-                    // Validação específica do TikTok
                     if (!userUrl.includes("tiktok.com")) {
                         throw new Error("Este não parece ser um link válido do TikTok.");
                     }
-                    // Chama a nova função de download
-                    await downloadTikTok(userUrl);
                     break;
                 
-                // ATUALIZADO: Case do YouTube
                 case "youtube":
-                    // Validação específica do YouTube (aceita links curtos e longos)
                     if (!userUrl.includes("youtube.com") && !userUrl.includes("youtu.be")) {
                          throw new Error("Este não parece ser um link válido do YouTube.");
                     }
-                    // Chama a nova função de download
-                    await downloadYouTube(userUrl);
                     break;
                 
                 default:
                     throw new Error("Plataforma desconhecida.");
             }
+
+            // 4. (A SOLUÇÃO) Monta a URL do NOSSO backend (o proxy)
+            // O frontend agora chama o '/api/proxy-download' que criamos no backend.
+            const proxyUrl = `/api/proxy-download?platform=${platform}&url=${encodeURIComponent(userUrl)}`;
+
+            // 5. Exibe o link de download
+            displayDownloadLink(proxyUrl);
+            
+            // 6. Sucesso!
+            setLoading(false);
+            showMessage(""); 
 
         } catch (error) {
             // 7. Tratar erros
@@ -74,104 +77,21 @@ Document.addEventListener("DOMContentLoaded", () => {
     });
 
     /**
-     * Função para cuidar do download do Instagram
+     * ATUALIZADO: Função única para exibir o link de download
+     * Esta função não baixa nada, apenas cria o link <a>
+     * O 'download' sem nome de arquivo funciona porque o backend (proxy)
+     * já está enviando o nome do arquivo (Content-Disposition).
      */
-    async function downloadInstagram(userUrl) {
-        const apiUrl = `https://api.nexfuture.com.br/api/downloads/instagram/mp4?url=${encodeURIComponent(userUrl)}`;
-        
-        const response = await fetch(apiUrl);
-
-        if (!response.ok) {
-            throw new Error(`Falha na API. Link inválido ou offline? (Status: ${response.status})`);
-        }
-
-        const videoBlob = await response.blob();
-
-        if (!videoBlob.type.startsWith('video/')) {
-            throw new Error("A API não retornou um vídeo. O link pode ser privado ou inválido.");
-        }
-
-        const videoUrl = URL.createObjectURL(videoBlob);
-
-        setLoading(false); 
-        showMessage(""); 
-        
-        const filename = `video-ig-${Date.now()}.mp4`; 
-        
+    function displayDownloadLink(proxyUrl) {
         resultArea.innerHTML = `
-            <a href="${videoUrl}" class="download-link" download="${filename}">
+            <a href="${proxyUrl}" class="download-link" download>
                 Download Concluído! Clique aqui ❤️
             </a>
         `;
     }
 
-    /**
-     * Função para cuidar do download do TikTok
-     */
-    async function downloadTikTok(userUrl) {
-        const apiUrl = `https://api.nexfuture.com.br/api/downloads/tiktok/mp4?url=${encodeURIComponent(userUrl)}`;
-        
-        const response = await fetch(apiUrl);
-
-        if (!response.ok) {
-            throw new Error(`Falha na API. Link inválido ou offline? (Status: ${response.status})`);
-        }
-
-        const videoBlob = await response.blob();
-
-        if (!videoBlob.type.startsWith('video/')) {
-            throw new Error("A API não retornou um vídeo. O link pode ser privado ou inválido.");
-        }
-
-        const videoUrl = URL.createObjectURL(videoBlob);
-
-        setLoading(false);
-        showMessage("");
-        
-        const filename = `video-tt-${Date.now()}.mp4`; 
-        
-        resultArea.innerHTML = `
-            <a href="${videoUrl}" class="download-link" download="${filename}">
-                Download Concluído! Clique aqui ❤️
-            </a>
-        `;
-    }
-
-    /**
-     * NOVO: Função para cuidar do download do YouTube
-     */
-    async function downloadYouTube(userUrl) {
-        // API fornecida por você
-        const apiUrl = `https://api.nexfuture.com.br/api/downloads/youtube/mp4?url=${encodeURIComponent(userUrl)}`;
-        
-        const response = await fetch(apiUrl);
-
-        if (!response.ok) {
-            throw new Error(`Falha na API. Link inválido ou offline? (Status: ${response.status})`);
-        }
-
-        const videoBlob = await response.blob();
-
-        // Validação (vídeos do YouTube às vezes vêm como 'video/mp4; codecs="..."')
-        if (!videoBlob.type.startsWith('video/')) {
-            throw new Error("A API não retornou um vídeo. O link pode ser privado ou inválido.");
-        }
-
-        const videoUrl = URL.createObjectURL(videoBlob);
-
-        // 6. Mostrar o resultado
-        setLoading(false); // Sucesso, desliga o loading
-        showMessage(""); // Limpa a mensagem
-        
-        // Sugere um nome de arquivo
-        const filename = `video-yt-${Date.now()}.mp4`; // 'yt' para YouTube
-        
-        resultArea.innerHTML = `
-            <a href="${videoUrl}" class="download-link" download="${filename}">
-                Download Concluído! Clique aqui ❤️
-            </a>
-        `;
-    }
+    // As funções async downloadInstagram, downloadTikTok e downloadYouTube
+    // foram removidas pois não são mais necessárias. O backend cuida de tudo.
 
 
     // Função para ligar/desligar o estado de carregamento do botão
