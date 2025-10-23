@@ -1,0 +1,163 @@
+/* Configurações Globais */
+:root {
+    --bg-color: #1a1a2e; /* Azul/Roxo bem escuro */
+    --container-color: #2a2a4e; /* Tom mais claro para o card */
+    --primary-pink: #ec4899; /* Rosa neon */
+    --primary-lavender: #a5b4fc; /* Lavanda fofo */
+    --text-color: #e0e0e0; /* Texto principal (branco suave) */
+    --text-light: #b0b0d0; /* Texto secundário */
+    --success-green: #34d399; /* Verde menta */
+    --error-red: #f87171; /* Vermelho suave */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* O Card Principal */
+.container {
+    background-color: var(--container-color);
+    padding: 30px 40px;
+    border-radius: 20px; /* Cantos arredondados fofos */
+    box-shadow: 0 0 35px rgba(236, 72, 153, 0.2); /* Brilho rosa */
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    border: 1px solid #4a4a7e;
+}
+
+h1 {
+    color: var(--primary-lavender);
+    text-shadow: 0 0 10px var(--primary-lavender), 0 0 20px var(--primary-pink);
+    margin-bottom: 10px;
+}
+
+p {
+    color: var(--text-light);
+    margin-bottom: 25px;
+}
+
+/* Formulário */
+#download-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#url-input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #5a5a8e;
+    border-radius: 12px; /* Arredondado */
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+#url-input:focus {
+    outline: none;
+    border-color: var(--primary-pink);
+    box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
+}
+
+#download-button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(45deg, var(--primary-pink), #8b5cf6); /* Gradiente */
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 54px; /* Altura fixa para o loader */
+}
+
+#download-button:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.7);
+}
+
+#download-button:disabled {
+    background: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Loader do Botão */
+.button-loader {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+
+/* Áreas de Mensagem e Resultado */
+#message-area {
+    margin-top: 20px;
+    font-size: 14px;
+    min-height: 20px; /* Evita que o layout "pule" */
+}
+
+.loading-message {
+    color: var(--primary-lavender);
+}
+
+.error-message {
+    color: var(--error-red);
+    font-weight: 600;
+}
+
+#result-area {
+    margin-top: 25px;
+}
+
+/* Link de Download Final */
+.download-link {
+    display: inline-block;
+    padding: 12px 25px;
+    text-decoration: none;
+    background: var(--success-green);
+    color: var(--bg-color); /* Texto escuro no botão claro */
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(52, 211, 153, 0.4);
+    animation: fadeIn 0.5s ease;
+}
+
+.download-link:hover {
+    background: #6ee7b7;
+    transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
