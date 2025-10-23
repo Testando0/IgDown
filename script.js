@@ -46,11 +46,14 @@ Document.addEventListener("DOMContentLoaded", () => {
                     await downloadTikTok(userUrl);
                     break;
 
-                case "threads":
-                    if (!userUrl.includes("threads.net")) {
-                         throw new Error("Este não parece ser um link válido do Threads.");
+                // --- Case "threads" foi removido ---
+
+                // NOVO CASE PARA KWAI
+                case "kwai":
+                    if (!userUrl.includes("kwai.com") && !userUrl.includes("kuaishou.com")) {
+                         throw new Error("Este não parece ser um link válido do Kwai.");
                     }
-                    await downloadThreads(userUrl); // Chama a função ATUALIZADA
+                    await downloadKwai(userUrl); // Chama a nova função
                     break;
                 
                 default:
@@ -131,103 +134,43 @@ Document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * ATUALIZADA: Função para cuidar do download do Threads (com api.vreden.my.id e Proxy CORS)
+     * NOVA: Função para cuidar do download do Kwai
+     * (Segue a mesma lógica do Instagram)
      */
-    async function downloadThreads(userUrl) {
+    async function downloadKwai(userUrl) {
+        // Usa a API do Kwai fornecida
+        const apiUrl = `https://api.nexfuture.com.br/api/downloads/kwai/mp4?url=${encodeURIComponent(userUrl)}`;
         
-        // 1. URL da NOVA API que retorna o JSON com os links
-        const apiUrl = `https://api.vreden.my.id/api/v1/download/threads?url=${encodeURIComponent(userUrl)}`;
-        
-        // 2. Usamos um proxy CORS (allorigins.win) para conseguir chamar a API 'api.vreden.my.id'
-        //    O 'api.allorigins.win/raw?url=' baixa o conteúdo da URL fornecida
-        const proxyApiUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`;
+        const response = await fetch(apiUrl);
 
-        showMessage("Conectando à API... 📡 (1/3)", "loading");
-        
-        let apiResponse;
-        try {
-            // Tenta buscar o JSON da API do Threads através do proxy
-            apiResponse = await fetch(proxyApiUrl);
-        } catch (e) {
-            throw new Error("Falha ao conectar no proxy CORS. Verifique a conexão ou o proxy.");
+        if (!response.ok) {
+            // Mensagem de erro específica do Kwai
+            throw new Error(`Falha na API (Kwai). Link inválido ou offline? (Status: ${response.status})`);
         }
 
-        if (!apiResponse.ok) {
-            throw new Error(`Falha na API (Threads) via Proxy. (Status: ${apiResponse.status})`);
+        const videoBlob = await response.blob();
+
+        if (!videoBlob.type.startsWith('video/')) {
+            // Mensagem de erro específica do Kwai
+            throw new Error("A API (Kwai) não retornou um vídeo. O link pode ser privado ou inválido.");
         }
 
-        const data = await apiResponse.json();
+        const videoUrl = URL.createObjectURL(videoBlob);
 
-        // 3. Validação da resposta da NOVA API
-        if (!data || data.status !== true || !data.result || !Array.isArray(data.result.media) || data.result.media.length === 0) {
-            throw new Error("Nenhuma mídia encontrada ou resposta inválida da API do Threads.");
-        }
-
-        const midias = data.result.media; // Array de mídias
-        resultArea.innerHTML = ""; // Limpa área de resultados
-        showMessage(`Mídia(s) encontrada(s): ${midias.length}. Baixando... ⏳ (2/3)`, "loading");
-
-        let mediaCount = 0;
+        setLoading(false); 
+        showMessage(""); 
         
-        // 4. Iteramos por cada mídia encontrada (vídeo ou imagem de um carrossel, por ex.)
-        for (const item of midias) {
-            const mediaUrl = item.url; // Este é o link direto (ex: dl.snapcdn.app/...)
-            if (!mediaUrl) continue;
-            
-            mediaCount++;
-            showMessage(`Baixando item ${mediaCount}/${midias.length}...`, "loading");
-
-            try {
-                // 5. USAMOS O PROXY DE NOVO!
-                // Desta vez, para baixar o *arquivo* (vídeo/imagem) que está no CDN
-                // Isso é essencial para o 'download' funcionar
-                const mediaProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(mediaUrl)}`;
-
-                const mediaResponse = await fetch(mediaProxyUrl);
-                
-                if (!mediaResponse.ok) {
-                    throw new Error(`Falha ao baixar mídia do item ${mediaCount}`);
-                }
-
-                // 6. Pegamos o Blob (o arquivo em si)
-                const mediaBlob = await mediaResponse.blob();
-
-                // 7. Criamos um Object URL local
-                const blobUrl = URL.createObjectURL(mediaBlob);
-                
-                // 8. Detecta o tipo (fornecido pela API) e define o nome do arquivo
-                const isVideo = (item.type === 'video');
-                const extension = isVideo ? 'mp4' : 'jpg'; // A API já nos diz o tipo
-                const filename = `media-threads-${Date.now()}-${mediaCount}.${extension}`;
-
-                // 9. Criar o link de download final
-                const linkElement = document.createElement('a');
-                linkElement.href = blobUrl;
-                linkElement.className = "download-link";
-                linkElement.download = filename; // Agora o 'download' funciona!
-                linkElement.textContent = `Download ${isVideo ? 'Vídeo' : 'Imagem'} ${mediaCount} ❤️`;
-                
-                resultArea.appendChild(linkElement); // Adiciona o link à área de resultados
-                
-            } catch (err) {
-                console.error(err);
-                // Se um item falhar, mostra um erro mas continua para o próximo
-                const errorElement = document.createElement('p');
-                errorElement.textContent = `Falha ao baixar item ${mediaCount}.`;
-                errorElement.className = "error-message";
-                resultArea.appendChild(errorElement);
-            }
-        }
+        // Nome do arquivo específico do Kwai
+        const filename = `video-kwai-${Date.now()}.mp4`; 
         
-        if (mediaCount === 0) {
-             throw new Error("API respondeu, mas não foi possível extrair mídias válidas.");
-        }
-
-        // 10. Sucesso
-        setLoading(false);
-        showMessage("Downloads prontos! (3/3)", ""); // Limpa mensagem de loading
-
+        resultArea.innerHTML = `
+            <a href="${videoUrl}" class="download-link" download="${filename}">
+                Download Concluído! Clique aqui ❤️
+            </a>
+        `;
     }
+
+    // --- Função downloadThreads(userUrl) foi removida ---
 
 
     // Função para ligar/desligar o estado de carregamento do botão
