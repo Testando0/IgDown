@@ -1,7 +1,6 @@
-// Espera o conteúdo da página carregar antes de rodar o script
 document.addEventListener("DOMContentLoaded", () => {
     
-    // Seleciona os elementos do HTML (nenhuma mudança aqui)
+    // Seleciona os elementos do HTML
     const form = document.getElementById("download-form");
     const urlInput = document.getElementById("url-input");
     const downloadButton = document.getElementById("download-button");
@@ -9,77 +8,93 @@ document.addEventListener("DOMContentLoaded", () => {
     const buttonLoader = downloadButton.querySelector(".button-loader");
     const messageArea = document.getElementById("message-area");
     const resultArea = document.getElementById("result-area");
+    
+    // NOVO: Selecionar o dropdown
+    const platformSelect = document.getElementById("platform-select");
 
     // Adiciona um "ouvinte" para o evento de submit do formulário
     form.addEventListener("submit", async (event) => {
-        // Impede que o formulário recarregue a página
         event.preventDefault(); 
         
         const userUrl = urlInput.value.trim();
+        // NOVO: Pega o valor da plataforma selecionada
+        const platform = platformSelect.value; 
 
         // 1. Validação simples
         if (!userUrl) {
             showMessage("Por favor, insira um URL.", "error");
             return;
         }
-        
-        if (!userUrl.includes("instagram.com")) {
-            showMessage("Parece que isso não é um link do Instagram.", "error");
-            return;
-        }
 
         // 2. Iniciar o estado de carregamento
         setLoading(true);
-        showMessage("Processando seu vídeo... 💖", "loading");
+        showMessage("Conectando aos servidores... 📡", "loading");
         resultArea.innerHTML = ""; // Limpa resultados anteriores
 
-        // 3. Chamar a NOVA API
+        // 3. Lógica de seleção de plataforma
         try {
-            // Nova URL da API
-            const apiUrl = `https://api.nexfuture.com.br/api/downloads/instagram/mp4?url=${encodeURIComponent(userUrl)}`;
-            
-            // Usamos fetch para chamar a API
-            const response = await fetch(apiUrl);
-
-            // Se a resposta não for OK (ex: erro 404 ou 500)
-            if (!response.ok) {
-                throw new Error(`Falha ao buscar. Link inválido ou API offline? (Status: ${response.status})`);
+            switch (platform) {
+                case "instagram":
+                    // Validação específica do Instagram
+                    if (!userUrl.includes("instagram.com")) {
+                        throw new Error("Este não parece ser um link válido do Instagram.");
+                    }
+                    // Chama a função de download específica
+                    await downloadInstagram(userUrl);
+                    break;
+                
+                case "tiktok":
+                case "youtube":
+                    // Mensagem de "em breve" para outras plataformas
+                    throw new Error(`Downloads do ${platform.charAt(0).toUpperCase() + platform.slice(1)} ainda não são suportados. Em breve!`);
+                
+                default:
+                    throw new Error("Plataforma desconhecida.");
             }
-
-            // 4. Processar a resposta como um VÍDEO (Blob)
-            // Não usamos mais .json(), usamos .blob()
-            const videoBlob = await response.blob();
-
-            // Verificação extra: Se a API falhar e retornar um erro em JSON,
-            // o tipo do blob não será "video/mp4".
-            if (!videoBlob.type.startsWith('video/')) {
-                throw new Error("A API não retornou um vídeo. O link pode ser de um post privado ou inválido.");
-            }
-
-            // 5. Criar um link de download para o Blob
-            // URL.createObjectURL() cria um link local temporário para o arquivo
-            const videoUrl = URL.createObjectURL(videoBlob);
-
-            // 6. Mostrar o resultado
-            setLoading(false);
-            showMessage(""); // Limpa a mensagem de loading
-            
-            // Cria um link <a> para o download
-            // Adicionamos o atributo 'download' para sugerir um nome de arquivo
-            resultArea.innerHTML = `
-                <a href="${videoUrl}" class="download-link" download="video-instagram.mp4">
-                    Seu vídeo está pronto! Clique aqui 🚀
-                </a>
-            `;
 
         } catch (error) {
-            // 7. Tratar erros
-            console.error(error); // Loga o erro no console do navegador
+            // 7. Tratar erros (captura erros da validação OU do download)
+            console.error(error); 
             setLoading(false);
             showMessage(error.message || "Oops! Algo deu errado. Tente novamente.", "error");
             resultArea.innerHTML = "";
         }
     });
+
+    /**
+     * NOVO: Função refatorada para cuidar APENAS do download do Instagram
+     */
+    async function downloadInstagram(userUrl) {
+        const apiUrl = `https://api.nexfuture.com.br/api/downloads/instagram/mp4?url=${encodeURIComponent(userUrl)}`;
+        
+        const response = await fetch(apiUrl);
+
+        if (!response.ok) {
+            throw new Error(`Falha na API. Link inválido ou offline? (Status: ${response.status})`);
+        }
+
+        const videoBlob = await response.blob();
+
+        if (!videoBlob.type.startsWith('video/')) {
+            throw new Error("A API não retornou um vídeo. O link pode ser privado ou inválido.");
+        }
+
+        const videoUrl = URL.createObjectURL(videoBlob);
+
+        // 6. Mostrar o resultado (agora dentro desta função)
+        setLoading(false); // Sucesso, desliga o loading
+        showMessage(""); // Limpa a mensagem
+        
+        // Sugere um nome de arquivo único
+        const filename = `video-ig-${Date.now()}.mp4`; 
+        
+        resultArea.innerHTML = `
+            <a href="${videoUrl}" class="download-link" download="${filename}">
+                Download Concluído! Clique aqui ⚡
+            </a>
+        `;
+    }
+
 
     // Função para ligar/desligar o estado de carregamento do botão (nenhuma mudança aqui)
     function setLoading(isLoading) {
