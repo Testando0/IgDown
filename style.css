@@ -1,13 +1,14 @@
-/* Configurações Globais */
+/* Configurações Globais Futuristas */
 :root {
-    --bg-color: #1a1a2e; /* Azul/Roxo bem escuro */
-    --container-color: #2a2a4e; /* Tom mais claro para o card */
-    --primary-pink: #ec4899; /* Rosa neon */
-    --primary-lavender: #a5b4fc; /* Lavanda fofo */
-    --text-color: #e0e0e0; /* Texto principal (branco suave) */
-    --text-light: #b0b0d0; /* Texto secundário */
-    --success-green: #34d399; /* Verde menta */
-    --error-red: #f87171; /* Vermelho suave */
+    --bg-color: #0D0D1E; /* Azul escuro/preto */
+    --container-color: rgba(10, 10, 30, 0.75); /* Painel de vidro escuro */
+    --primary-cyan: #00FFFF; /* Ciano neon */
+    --primary-magenta: #FF00FF; /* Magenta neon */
+    --text-color: #E0E0FF; /* Texto (branco-azulado) */
+    --text-light: #9A9AEB; /* Texto secundário (lavanda) */
+    --border-color: rgba(0, 255, 255, 0.3); /* Borda ciano sutil */
+    --success-green: #00FF7F; /* Verde spring */
+    --error-red: #F87171; /* Vermelho suave (mantido) */
 }
 
 * {
@@ -17,8 +18,19 @@
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
+    /* Nova fonte tech */
+    font-family: 'Share Tech Mono', 'Poppins', sans-serif;
     background-color: var(--bg-color);
+    background-image: linear-gradient(
+        var(--border-color) 1px, 
+        transparent 1px
+    ),
+    linear-gradient(
+        to right, 
+        var(--border-color) 1px, 
+        var(--bg-color) 1px
+    );
+    background-size: 40px 40px; /* Efeito de grade de fundo */
     color: var(--text-color);
     display: flex;
     justify-content: center;
@@ -31,18 +43,21 @@ body {
 .container {
     background-color: var(--container-color);
     padding: 30px 40px;
-    border-radius: 20px; /* Cantos arredondados fofos */
-    box-shadow: 0 0 35px rgba(236, 72, 153, 0.2); /* Brilho rosa */
+    border-radius: 10px; /* Menos arredondado */
+    /* Efeito de vidro */
+    backdrop-filter: blur(10px); 
+    box-shadow: 0 0 35px rgba(0, 255, 255, 0.3), 0 0 10px rgba(255, 0, 255, 0.2); /* Brilho neon */
     text-align: center;
     max-width: 500px;
     width: 100%;
-    border: 1px solid #4a4a7e;
+    border: 1px solid var(--border-color);
 }
 
 h1 {
-    color: var(--primary-lavender);
-    text-shadow: 0 0 10px var(--primary-lavender), 0 0 20px var(--primary-pink);
+    color: var(--primary-cyan);
+    text-shadow: 0 0 8px var(--primary-cyan), 0 0 16px var(--primary-magenta);
     margin-bottom: 10px;
+    letter-spacing: 2px;
 }
 
 p {
@@ -57,12 +72,53 @@ p {
     gap: 15px;
 }
 
+/* NOVO: Wrapper para o Select */
+.select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.select-wrapper::after {
+    /* Seta customizada */
+    content: '▼';
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    color: var(--primary-cyan);
+    pointer-events: none;
+    text-shadow: 0 0 5px var(--primary-cyan);
+}
+
+/* NOVO: Estilo do Select */
+#platform-select {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: rgba(0,0,0,0.3);
+    color: var(--text-color);
+    font-size: 16px;
+    font-family: 'Share Tech Mono', 'Poppins', sans-serif;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none; /* Remove estilo padrão */
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#platform-select:focus {
+    outline: none;
+    border-color: var(--primary-magenta);
+    box-shadow: 0 0 10px var(--primary-magenta);
+}
+
 #url-input {
     width: 100%;
     padding: 15px;
-    border: 2px solid #5a5a8e;
-    border-radius: 12px; /* Arredondado */
-    background: var(--bg-color);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: rgba(0,0,0,0.3);
     color: var(--text-color);
     font-size: 16px;
     transition: all 0.3s ease;
@@ -70,31 +126,33 @@ p {
 
 #url-input:focus {
     outline: none;
-    border-color: var(--primary-pink);
-    box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
+    border-color: var(--primary-magenta);
+    box-shadow: 0 0 10px var(--primary-magenta);
 }
 
 #download-button {
     width: 100%;
     padding: 15px;
     border: none;
-    border-radius: 12px;
-    background: linear-gradient(45deg, var(--primary-pink), #8b5cf6); /* Gradiente */
-    color: white;
+    border-radius: 8px;
+    /* Gradiente neon */
+    background: linear-gradient(45deg, var(--primary-magenta), var(--primary-cyan));
+    color: #0D0D1E; /* Texto escuro para contraste */
     font-size: 18px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 54px; /* Altura fixa para o loader */
+    height: 54px; 
+    font-family: 'Share Tech Mono', 'Poppins', sans-serif;
 }
 
 #download-button:hover:not(:disabled) {
     transform: translateY(-3px);
-    box-shadow: 0 0 20px rgba(236, 72, 153, 0.7);
+    box-shadow: 0 0 20px var(--primary-cyan), 0 0 10px var(--primary-magenta);
 }
 
 #download-button:disabled {
@@ -107,8 +165,8 @@ p {
 .button-loader {
     width: 24px;
     height: 24px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    border-top-color: #fff;
+    border: 3px solid rgba(0, 0, 0, 0.3);
+    border-top-color: #0D0D1E;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -122,38 +180,42 @@ p {
 #message-area {
     margin-top: 20px;
     font-size: 14px;
-    min-height: 20px; /* Evita que o layout "pule" */
+    min-height: 20px; 
 }
 
 .loading-message {
-    color: var(--primary-lavender);
+    color: var(--primary-cyan);
+    text-shadow: 0 0 5px var(--primary-cyan);
 }
 
 .error-message {
     color: var(--error-red);
     font-weight: 600;
+    text-shadow: 0 0 5px var(--error-red);
 }
 
 #result-area {
     margin-top: 25px;
 }
 
-/* Link de Download Final */
+/* Link de Download Final (estilo "holográfico") */
 .download-link {
     display: inline-block;
     padding: 12px 25px;
     text-decoration: none;
-    background: var(--success-green);
-    color: var(--bg-color); /* Texto escuro no botão claro */
+    background: transparent;
+    border: 2px solid var(--success-green);
+    color: var(--success-green);
     font-weight: 600;
-    border-radius: 10px;
+    border-radius: 8px;
     transition: all 0.3s ease;
-    box-shadow: 0 0 15px rgba(52, 211, 153, 0.4);
+    box-shadow: 0 0 15px rgba(0, 255, 127, 0.4);
     animation: fadeIn 0.5s ease;
+    text-shadow: 0 0 5px var(--success-green);
 }
 
 .download-link:hover {
-    background: #6ee7b7;
+    background: rgba(0, 255, 127, 0.1);
     transform: scale(1.05);
 }
 
