@@ -40,11 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     await downloadKwai(userUrl);
                     break;
 
-                case "pinterest":
-                    if (!userUrl.includes("pinterest.com") && !userUrl.includes("pin.it")) throw new Error("Link inválido do Pinterest.");
-                    await downloadPinterest(userUrl);
-                    break;
-
                 default:
                     throw new Error("Plataforma desconhecida ou não suportada.");
             }
@@ -66,17 +61,17 @@ document.addEventListener("DOMContentLoaded", () => {
     async function downloadInstagram(userUrl) {
         const apiUrl = `https://api.nexfuture.com.br/api/downloads/instagram/mp4?url=${encodeURIComponent(userUrl)}`;
         const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error(`Falha na API (IG). Status: ${response.status}`);
+        if (!response.ok) throw new Error(`Falha na API (Instagram). Status: ${response.status}`);
 
         const videoBlob = await response.blob();
-        if (!videoBlob.type.startsWith("video/")) throw new Error("A API (IG) não retornou um vídeo válido.");
+        if (!videoBlob.type.startsWith("video/")) throw new Error("A API (Instagram) não retornou um vídeo válido.");
 
         const videoUrl = URL.createObjectURL(videoBlob);
-        const filename = `video-ig-${Date.now()}.mp4`;
+        const filename = `video-instagram-${Date.now()}.mp4`;
 
         resultArea.innerHTML = `
             <a href="${videoUrl}" class="download-link" download="${filename}">
-                Download Concluído! Clique aqui ❤️
+                📥 Download concluído — clique aqui ❤️
             </a>
         `;
     }
@@ -87,17 +82,17 @@ document.addEventListener("DOMContentLoaded", () => {
     async function downloadTikTok(userUrl) {
         const apiUrl = `https://api.nexfuture.com.br/api/downloads/tiktok/mp4?url=${encodeURIComponent(userUrl)}`;
         const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error(`Falha na API (TT). Status: ${response.status}`);
+        if (!response.ok) throw new Error(`Falha na API (TikTok). Status: ${response.status}`);
 
         const videoBlob = await response.blob();
-        if (!videoBlob.type.startsWith("video/")) throw new Error("A API (TT) não retornou um vídeo válido.");
+        if (!videoBlob.type.startsWith("video/")) throw new Error("A API (TikTok) não retornou um vídeo válido.");
 
         const videoUrl = URL.createObjectURL(videoBlob);
-        const filename = `video-tt-${Date.now()}.mp4`;
+        const filename = `video-tiktok-${Date.now()}.mp4`;
 
         resultArea.innerHTML = `
             <a href="${videoUrl}" class="download-link" download="${filename}">
-                Download Concluído! Clique aqui ❤️
+                📥 Download concluído — clique aqui ❤️
             </a>
         `;
     }
@@ -132,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             resultArea.innerHTML = `
                 <a href="${videoUrl}" class="download-link" download="${filename}">
-                    Download (Kwai) pronto — clique aqui se o arquivo não baixou automaticamente ❤️
+                    📥 Download (Kwai) pronto — clique aqui se o arquivo não baixou automaticamente ❤️
                 </a>
             `;
         } catch (err) {
@@ -141,42 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * 🆕 Pinterest (API alternativa funcional)
-     */
-    async function downloadPinterest(userUrl) {
-        const apiUrl = `https://api-pinterest-y7jx.onrender.com/api/vid2?url=${encodeURIComponent(userUrl)}`;
-
-        try {
-            const response = await fetch(apiUrl);
-            if (!response.ok) throw new Error(`Falha na API (Pinterest). Status: ${response.status}`);
-
-            const data = await response.json();
-            if (!data || !data.video_url) {
-                throw new Error("Nenhum vídeo encontrado ou resposta inválida da API (Pinterest).");
-            }
-
-            const videoURL = data.video_url;
-            const filename = `video-pinterest-${Date.now()}.mp4`;
-
-            resultArea.innerHTML = `
-                <video controls style="width:100%;border-radius:10px;margin-top:10px;">
-                    <source src="${videoURL}" type="video/mp4">
-                    Seu navegador não suporta vídeo.
-                </video>
-                <a href="${videoURL}" class="download-link" download="${filename}">
-                    🎬 Baixar Vídeo do Pinterest ❤️
-                </a>
-            `;
-
-            showMessage("Download do Pinterest pronto! ✅");
-        } catch (error) {
-            console.error(error);
-            showMessage("Erro ao processar vídeo do Pinterest 😢", "error");
-        }
-    }
-
-    /**
-     * ⚙️ Utilidades
+     * ⚙️ Funções auxiliares
      */
     function setLoading(isLoading) {
         if (isLoading) {
