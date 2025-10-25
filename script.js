@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+Document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("download-form");
     const urlInput = document.getElementById("url-input");
     const downloadButton = document.getElementById("download-button");
@@ -141,27 +141,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * 🆕 Pinterest
+     * 🆕 Pinterest (ATUALIZADO)
      */
     async function downloadPinterest(userUrl) {
-        const apiUrl = `http://speedhosting.cloud:2009/download/pinterest-mp4?link=${encodeURIComponent(userUrl)}`;
+        // API atualizada com base no exemplo fornecido
+        const apiUrl = `https://api-pinterest-y7jx.onrender.com/api/vid2?url=${encodeURIComponent(userUrl)}`;
+        
         const response = await fetch(apiUrl);
         if (!response.ok) throw new Error(`Falha na API (Pinterest). Status: ${response.status}`);
 
         const data = await response.json();
-        if (!data.status || !data.video) throw new Error("Não foi possível obter o vídeo do Pinterest.");
+        
+        // Verificação atualizada com base no exemplo ('res.video_url')
+        if (!data || !data.video_url) {
+            throw new Error("Não foi possível obter o vídeo do Pinterest.");
+        }
 
+        const videoUrl = data.video_url; // Obtém o vídeo da propriedade correta
         const filename = `video-pinterest-${Date.now()}.mp4`;
 
+        // HTML simplificado, pois a nova API (pelo exemplo) não parece fornecer título ou thumb
         resultArea.innerHTML = `
-            <div style="text-align:center">
-                <h3>${data.titulo || "Vídeo do Pinterest"}</h3>
-                <img src="${data.thumb}" width="250" style="border-radius:10px;margin:10px 0;">
-                <br>
-                <a href="${data.video}" class="download-link" download="${filename}">
-                    🎬 Baixar Vídeo do Pinterest ❤️
-                </a>
-            </div>
+            <a href="${videoUrl}" class="download-link" download="${filename}">
+                🎬 Baixar Vídeo do Pinterest ❤️
+            </a>
         `;
     }
 
