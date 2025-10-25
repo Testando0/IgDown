@@ -144,23 +144,19 @@ Document.addEventListener("DOMContentLoaded", () => {
      * 🆕 Pinterest (ATUALIZADO)
      */
     async function downloadPinterest(userUrl) {
-        // API atualizada com base no exemplo fornecido
-        const apiUrl = `https://api-pinterest-y7jx.onrender.com/api/vid2?url=${encodeURIComponent(userUrl)}`;
+        // API atualizada para (nexfuture), que retorna o blob direto.
+        const apiUrl = `https://api.nexfuture.com.br/api/downloads/pinterest/mp4?url=${encodeURIComponent(userUrl)}`;
         
         const response = await fetch(apiUrl);
         if (!response.ok) throw new Error(`Falha na API (Pinterest). Status: ${response.status}`);
 
-        const data = await response.json();
-        
-        // Verificação atualizada com base no exemplo ('res.video_url')
-        if (!data || !data.video_url) {
-            throw new Error("Não foi possível obter o vídeo do Pinterest.");
-        }
+        // A API agora retorna o vídeo (blob) diretamente, igual ao IG e TT.
+        const videoBlob = await response.blob();
+        if (!videoBlob.type.startsWith("video/")) throw new Error("A API (Pinterest) não retornou um vídeo válido.");
 
-        const videoUrl = data.video_url; // Obtém o vídeo da propriedade correta
+        const videoUrl = URL.createObjectURL(videoBlob);
         const filename = `video-pinterest-${Date.now()}.mp4`;
 
-        // HTML simplificado, pois a nova API (pelo exemplo) não parece fornecer título ou thumb
         resultArea.innerHTML = `
             <a href="${videoUrl}" class="download-link" download="${filename}">
                 🎬 Baixar Vídeo do Pinterest ❤️
