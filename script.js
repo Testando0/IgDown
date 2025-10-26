@@ -8,16 +8,6 @@ Document.addEventListener("DOMContentLoaded", () => {
     const resultArea = document.getElementById("result-area");
     const platformSelect = document.getElementById("platform-select");
 
-    // =================================================================
-    // !! ALERTA DE SEGURANÇA !!
-    // Colocar sua chave de API aqui é MUITO PERIGOSO.
-    // Qualquer visitante do site pode roubá-la.
-    // Considere criar um endpoint em 'api.nexfuture.com.br' para 
-    // fazer essa chamada no servidor (back-end).
-    // =================================================================
-    const API_KEY_BRONXYS = "KEY-TEMPORARIA-TELEGRAM-ALEATORY"; 
-    // =================================================================
-
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
@@ -48,12 +38,6 @@ Document.addEventListener("DOMContentLoaded", () => {
                 case "kwai":
                     if (!userUrl.includes("kwai.com") && !userUrl.includes("kuaishou.com")) throw new Error("Link inválido do Kwai.");
                     await downloadKwai(userUrl);
-                    break;
-                
-                // CASE ATUALIZADO
-                case "threads":
-                    if (!userUrl.includes("threads.net")) throw new Error("Link inválido do Threads.");
-                    await downloadThreads(userUrl);
                     break;
 
                 default:
@@ -150,71 +134,6 @@ Document.addEventListener("DOMContentLoaded", () => {
             throw err;
         }
     }
-
-    /**
-     * 🧵 Threads (FUNÇÃO ATUALIZADA)
-     * Usa a API 'bronxyshost' que você forneceu.
-     * Inclui um fallback 'window.open' similar ao Kwai,
-     * pois o 'fetch' de APIs externas pode ser bloqueado por CORS.
-     */
-    async function downloadThreads(userUrl) {
-        if (!API_KEY_BRONXYS || API_KEY_BRONXYS === "COLOQUE_SUA_API_KEY_AQUI") {
-            throw new Error("API Key do Threads (Bronxys) não está configurada.");
-        }
-
-        const apiUrl = `https://api.bronxyshost.com.br/api-bronxys/threads?url=${encodeURIComponent(userUrl)}&apikey=${API_KEY_BRONXYS}`;
-
-        try {
-            // Tenta fazer o fetch (pode falhar por CORS)
-            const response = await fetch(apiUrl);
-
-            if (!response.ok) {
-                // Se a API retornar um erro (404, 500, etc)
-                window.open(apiUrl, "_blank"); // Abre em nova aba como fallback
-                throw new Error(`Falha na API (Threads/Bronxys). Status: ${response.status}`);
-            }
-
-            const blob = await response.blob();
-            if (!blob.type.startsWith("video/")) {
-                // Se a resposta for OK, mas não for um vídeo (ex: JSON de erro)
-                window.open(apiUrl, "_blank"); // Abre em nova aba como fallback
-                throw new Error("A API (Threads/Bronxys) não retornou um arquivo de vídeo.");
-            }
-
-            // Se o fetch funcionou e é um vídeo:
-            const videoUrl = URL.createObjectURL(blob);
-            const filename = `video-threads-${Date.now()}.mp4`;
-
-            // Força o download
-            const tempLink = document.createElement("a");
-            tempLink.href = videoUrl;
-            tempLink.download = filename;
-            document.body.appendChild(tempLink);
-            tempLink.click();
-            document.body.removeChild(tempLink);
-
-            resultArea.innerHTML = `
-                <a href="${videoUrl}" class="download-link" download="${filename}">
-                    📥 Download (Threads) pronto — clique aqui se o arquivo não baixou automaticamente ❤️
-                </a>
-            `;
-
-        } catch (err) {
-            // Isso geralmente acontece por erro de CORS (quando o fetch é bloqueado)
-            console.warn("Fetch falhou (provavelmente CORS), usando fallback window.open(). Erro:", err.message);
-
-            // Fallback: Abrir a URL da API diretamente em uma nova aba.
-            // O navegador tentará baixar o arquivo que a API enviar.
-            window.open(apiUrl, "_blank");
-            resultArea.innerHTML = `
-                <a href="${apiUrl}" class="download-link" target="_blank">
-                    📥 O download deve iniciar em uma nova aba. Clique aqui se não funcionar.
-                </a>
-            `;
-            // Não relançamos o erro aqui, pois o fallback é um comportamento esperado.
-        }
-    }
-
 
     /**
      * ⚙️ Funções auxiliares
