@@ -6,10 +6,8 @@
   <title>Kuromi Downloader | Multi-Platform</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/hls.js@latest"></script>
-
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&family=Orbitron:wght=500;700&display=swap" rel="stylesheet">
 
   <style>
     :root { 
@@ -197,12 +195,19 @@ function switchPlatform(platform) {
     }
 }
 
-// Auto-detecção ao colar link
+// Auto-detecção ao colar link (USANDO URL NATIVO PARA MAIOR ROBUSTEZ)
 function detectPlatform(val) {
-    if(val.includes('threads.net')) {
-        switchPlatform('threads');
-    } else if(val.includes('instagram.com')) {
-        switchPlatform('insta');
+    try {
+        const url = new URL(val);
+        const hostname = url.hostname;
+        
+        if (hostname.includes('threads.net')) {
+            switchPlatform('threads');
+        } else if (hostname.includes('instagram.com')) {
+            switchPlatform('insta');
+        }
+    } catch (e) {
+        // Ignora se não for uma URL válida
     }
 }
 
@@ -221,7 +226,6 @@ async function processDownload(){
     setSearchLoading(true);
 
     try {
-        // Seleciona a API correta baseada no botão ativo
         const apiUrlBase = APIS[currentPlatform];
         const targetApiUrl = apiUrlBase + encodeURIComponent(rawUrl);
         const fetchUrl = PROXY_URL + encodeURIComponent(targetApiUrl);
@@ -229,32 +233,41 @@ async function processDownload(){
         console.log(`Buscando [${currentPlatform}]:`, targetApiUrl);
 
         const res = await fetch(fetchUrl);
-        if(!res.ok) throw new Error(`Erro na API: ${res.status}`);
+        
+        let json;
+        try {
+            // Tenta ler o JSON
+            json = await res.json();
+        } catch {
+            // Se falhar a leitura do JSON, trate como erro genérico de rede/API
+            throw new Error(`API retornou resposta ilegível ou formato inválido. Status: ${res.status}`);
+        }
 
-        const json = await res.json();
-        console.log('Resposta JSON:', json);
+        /* --- TRATAMENTO DE ERRO ROBUSTO (Res.ok ou JSON de erro) --- */
+        if (!res.ok) {
+            // Se o status HTTP não for OK (2xx), tenta pegar a mensagem de erro do JSON
+            const apiErrorMsg = json.message || json.error || `Erro de Servidor: ${res.status}`;
+            throw new Error(`Falha na Requisição: ${apiErrorMsg}`);
+        }
 
         /* --- LÓGICA DE EXTRAÇÃO (ADAPTADA PARA AS DUAS APIs) --- */
         let videoData = null;
 
         if (currentPlatform === 'insta') {
-            // Lógica Instagram (Case original)
             if (!json.data || !json.data.data || json.data.data.length < 1) {
-                throw new Error("Vídeo do Instagram não encontrado.");
+                throw new Error("Vídeo do Instagram não encontrado. Conteúdo privado?");
             }
             videoData = json.data.data[0];
         } 
         else if (currentPlatform === 'threads') {
-            // Lógica Threads (Novo Case)
-            // json.result.media[0].url
             if (!json.result || !json.result.media || json.result.media.length < 1) {
-                throw new Error("Vídeo do Threads não encontrado.");
+                throw new Error("Vídeo do Threads não encontrado. Conteúdo privado?");
             }
             videoData = json.result.media[0];
         }
 
         if (!videoData || !videoData.url) {
-            throw new Error("URL de mídia inválida.");
+            throw new Error("URL de mídia inválida ou ausente na resposta da API.");
         }
 
         foundVideoUrl = videoData.url;
@@ -265,7 +278,8 @@ async function processDownload(){
     } catch (error) {
         console.error(error);
         let msg = error.message;
-        if(msg.includes('Failed to fetch')) msg = "API Offline (Render). Tente novamente em 1 min.";
+        if(msg.includes('Failed to fetch')) msg = "Erro de Rede (CORS/Proxy). Tente novamente.";
+        if(msg.includes('render')) msg = "API Kuromi Offline (Render). Tente novamente em 1 min.";
         showError(msg);
     } finally {
         setSearchLoading(false);
@@ -277,9 +291,10 @@ async function startBlobDownload() {
     if(!foundVideoUrl) return;
 
     setDownloadLoading(true);
+    alert("Iniciando download... Arquivos muito grandes podem falhar devido à limitação de memória do navegador.");
 
     try {
-        // Usar proxy para baixar o arquivo
+        // O uso do proxy aqui pode aumentar a chance de falha em arquivos grandes.
         const videoProxyUrl = PROXY_URL + encodeURIComponent(foundVideoUrl);
 
         const response = await fetch(videoProxyUrl);
@@ -300,7 +315,7 @@ async function startBlobDownload() {
 
     } catch (error) {
         console.error("Erro Blob:", error);
-        alert("Erro ao salvar. Tente novamente.");
+        alert("Erro ao salvar o arquivo. Tente novamente.");
     } finally {
         setDownloadLoading(false);
     }
@@ -312,8 +327,9 @@ function showResult(url) {
     const resArea = document.getElementById('resultArea');
     
     player.src = url;
-    document.getElementById('resFilename').innerText = foundFilename;
-    document.getElementById('platformTag').innerText = currentPlatform.toUpperCase();
+    // Uso de textContent para segurança contra XSS
+    document.getElementById('resFilename').textContent = foundFilename; 
+    document.getElementById('platformTag').textContent = currentPlatform.toUpperCase(); 
     
     resArea.classList.remove('hidden');
     resArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -322,7 +338,8 @@ function showResult(url) {
 function showError(msg) {
     const el = document.getElementById('errorText');
     const box = document.getElementById('errorMsg');
-    el.innerText = msg;
+    // Uso de textContent para segurança contra XSS
+    el.textContent = msg; 
     box.classList.remove('hidden');
     box.classList.add('animate-pulse');
     setTimeout(() => box.classList.remove('animate-pulse'), 500);
@@ -377,6 +394,14 @@ function setDownloadLoading(isLoading) {
 // Enter key
 document.getElementById('urlInput').addEventListener('keypress', (e) => {
     if(e.key === 'Enter') processDownload();
+});
+
+// Listener para erros no player para melhorar o feedback do usuário
+document.getElementById('previewPlayer').addEventListener('error', (e) => {
+    // Código 4 significa que a mídia não é suportada
+    if (e.target.error.code === 4) {
+        showError("O player não suporta este formato de vídeo. O download (SALVAR) ainda pode funcionar.");
+    }
 });
 </script>
 </body>
