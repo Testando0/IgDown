@@ -3,68 +3,41 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Kuromi Downloader | Multi-Platform</title>
+  <title>Kuromi Downloader | Ultimate Fix</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
+  
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&family=Orbitron:wght=500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
 
   <style>
-    :root { 
-        --neon-purple:#a855f7; 
-        --neon-pink:#ff00aa; 
-        --dark-bg:#050505; 
-    }
+    :root { --neon-purple:#a855f7; --neon-pink:#ff00aa; --dark-bg:#050505; }
     
     body { 
-        font-family:'Outfit',sans-serif; 
-        background:var(--dark-bg); 
-        min-height:100vh; 
-        color:#e4e4e7;
-        background-image: 
-            radial-gradient(circle at 50% 0%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 0% 100%, rgba(255, 0, 170, 0.1) 0%, transparent 50%); 
+        font-family:'Outfit',sans-serif; background:var(--dark-bg); min-height:100vh; color:#e4e4e7;
+        background-image: radial-gradient(circle at 50% 0%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                          radial-gradient(circle at 0% 100%, rgba(255, 0, 170, 0.1) 0%, transparent 50%); 
         overflow-x: hidden;
     }
 
     .dark-glass { 
-        background: rgba(20, 20, 20, 0.7); 
-        backdrop-filter: blur(12px); 
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(168, 85, 247, 0.2); 
-        box-shadow: 0 0 30px rgba(0,0,0,0.5); 
+        background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(168, 85, 247, 0.2); box-shadow: 0 0 30px rgba(0,0,0,0.5); 
     }
 
-    .glow-focus:focus-within { 
-        box-shadow: 0 0 25px rgba(168,85,247,0.25); 
-        border-color: rgba(168,85,247,0.5); 
-    }
+    .glow-focus:focus-within { box-shadow: 0 0 25px rgba(168,85,247,0.25); border-color: rgba(168,85,247,0.5); }
 
     .loader { 
-        border: 3px solid rgba(255,255,255,0.1); 
-        border-left-color: var(--neon-pink); 
-        border-radius: 50%; 
-        width: 24px; height: 24px; 
-        animation: spin 1s linear infinite; 
+        border: 3px solid rgba(255,255,255,0.1); border-left-color: var(--neon-pink); border-radius: 50%; 
+        width: 24px; height: 24px; animation: spin 1s linear infinite; 
     }
-    
     @keyframes spin { 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
     @keyframes fadeUp { from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
     .animate-fade-up { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .orbitron { font-family: 'Orbitron', sans-serif; }
 
-    /* Estilo dos botões de plataforma */
-    .platform-btn {
-        transition: all 0.3s ease;
-        opacity: 0.6;
-        border: 1px solid transparent;
-    }
-    .platform-btn.active {
-        opacity: 1;
-        background: rgba(168, 85, 247, 0.2);
-        border-color: var(--neon-purple);
-        box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
-    }
+    .platform-btn { transition: all 0.3s ease; opacity: 0.5; filter: grayscale(100%); }
+    .platform-btn.active { opacity: 1; filter: grayscale(0%); background: rgba(168, 85, 247, 0.15); border: 1px solid var(--neon-purple); box-shadow: 0 0 15px rgba(168, 85, 247, 0.2); }
   </style>
 </head>
 
@@ -73,43 +46,36 @@
   <nav class="absolute top-0 left-0 w-full p-6 flex justify-between items-center max-w-7xl mx-auto z-10">
     <div class="flex items-center gap-3 text-xl font-bold tracking-wider">
       <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.5)]">
-        <i class="fa-solid fa-skull text-white text-lg"></i>
+        <i class="fa-solid fa-bolt text-white text-lg"></i>
       </div>
       <span class="text-white orbitron">Kuromi<span class="text-purple-400">DL</span></span>
     </div>
-    <div class="text-[10px] font-medium text-zinc-500 border border-zinc-800 px-3 py-1 rounded-full bg-zinc-900/50 tracking-widest">
-      MULTI SYSTEM v2.5
-    </div>
+    <div class="text-[10px] font-medium text-zinc-500 border border-zinc-800 px-3 py-1 rounded-full bg-zinc-900/50 tracking-widest">SYSTEM V3.1</div>
   </nav>
 
   <main class="w-full max-w-2xl mt-20 relative z-0">
     
     <div class="text-center mb-8 animate-fade-up">
       <h1 class="text-4xl md:text-6xl font-bold mb-4 text-white orbitron drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">
-        Baixe <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">Mídias</span>
+        Baixe <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">Agora</span>
       </h1>
-      <p class="text-zinc-400 text-lg font-light">Instagram & Threads Downloader</p>
+      <p class="text-zinc-400 text-lg font-light">Cole o link. Baixe o vídeo.</p>
     </div>
 
-    <div class="flex justify-center gap-4 mb-6 animate-fade-up" style="animation-delay: 0.05s;">
-        <button onclick="switchPlatform('insta')" id="btn-insta" class="platform-btn active flex items-center gap-2 px-6 py-2 rounded-full text-white font-bold orbitron bg-zinc-900">
-            <i class="fa-brands fa-instagram text-xl"></i> Insta
+    <div class="flex justify-center gap-3 mb-6 animate-fade-up" style="animation-delay: 0.05s;">
+        <button onclick="switchPlatform('insta')" id="btn-insta" class="platform-btn active px-6 py-2 rounded-full text-white font-bold orbitron bg-zinc-900 flex items-center gap-2">
+            <i class="fa-brands fa-instagram"></i> Insta
         </button>
-        <button onclick="switchPlatform('threads')" id="btn-threads" class="platform-btn flex items-center gap-2 px-6 py-2 rounded-full text-white font-bold orbitron bg-zinc-900">
-            <i class="fa-brands fa-threads text-xl"></i> Threads
+        <button onclick="switchPlatform('threads')" id="btn-threads" class="platform-btn px-6 py-2 rounded-full text-white font-bold orbitron bg-zinc-900 flex items-center gap-2">
+            <i class="fa-brands fa-threads"></i> Threads
         </button>
     </div>
 
     <div class="dark-glass rounded-2xl p-2 mb-8 animate-fade-up glow-focus transition-all duration-300" style="animation-delay: 0.1s;">
       <div class="relative flex items-center">
         <div class="absolute left-4 text-purple-500 text-xl" id="inputIcon"><i class="fa-brands fa-instagram"></i></div>
-        
-        <input type="text" id="urlInput" 
-          placeholder="Cole o Link do Instagram..." 
-          class="w-full bg-transparent border-none text-zinc-100 placeholder-zinc-600 px-12 py-4 focus:ring-0 focus:outline-none text-lg font-light orbitron"
-          oninput="detectPlatform(this.value)">
-        
-        <div class="absolute right-2 flex items-center gap-2">
+        <input type="text" id="urlInput" placeholder="Link do Instagram..." class="w-full bg-transparent border-none text-zinc-100 placeholder-zinc-600 px-12 py-4 focus:ring-0 focus:outline-none text-lg font-light orbitron" oninput="detectPlatform(this.value)">
+        <div class="absolute right-2">
           <button onclick="processDownload()" id="mainBtn" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg shadow-purple-900/40 flex items-center gap-2 hover:scale-105 active:scale-95">
             <span id="btnText">BAIXAR</span>
             <div id="btnLoader" class="loader hidden"></div>
@@ -119,7 +85,7 @@
     </div>
 
     <div id="resultArea" class="hidden animate-fade-up" style="animation-delay:0.2s;">
-      <div class="dark-glass rounded-2xl p-6 border border-zinc-800 relative overflow-hidden group">
+      <div class="dark-glass rounded-2xl p-6 border border-zinc-800 relative overflow-hidden">
         <div class="absolute top-0 right-0 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
         
         <div class="flex flex-col gap-6">
@@ -129,19 +95,15 @@
 
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="text-left w-full">
-                    <h3 class="text-xl font-bold text-white orbitron mb-1">Mídia Encontrada</h3>
-                    <p class="text-purple-400 text-xs uppercase tracking-widest" id="resFilename">video_kuromi.mp4</p>
-                    <span id="platformTag" class="mt-2 inline-block text-[10px] bg-zinc-800 px-2 py-1 rounded border border-zinc-700 text-zinc-400">INSTAGRAM</span>
+                    <h3 class="text-xl font-bold text-white orbitron mb-1">Vídeo Pronto</h3>
+                    <span id="platformTag" class="inline-block text-[10px] bg-zinc-800 px-2 py-1 rounded border border-zinc-700 text-zinc-400 uppercase">INSTAGRAM</span>
+                    <p id="fallbackMsg" class="text-yellow-400 text-xs mt-2 hidden"><i class="fa-solid fa-triangle-exclamation"></i> Clique novamente para salvar.</p>
                 </div>
 
                 <div class="w-full md:w-auto flex flex-col gap-2">
-                    <button id="btnDownloadFile" onclick="startBlobDownload()" class="w-full md:w-auto bg-white text-black hover:bg-gray-200 px-6 py-3 rounded-lg font-bold text-center transition flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(255,255,255,0.2)]">
-                        <i class="fa-solid fa-download"></i> <span id="dlBtnText">SALVAR NO DISPOSITIVO</span>
+                    <button id="btnDownloadFile" onclick="smartDownload()" class="w-full md:w-auto bg-white text-black hover:bg-gray-200 px-6 py-3 rounded-lg font-bold text-center transition flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                        <i class="fa-solid fa-download"></i> <span id="dlBtnText">SALVAR VÍDEO</span>
                         <div id="dlLoader" class="loader hidden border-zinc-400 border-l-black w-4 h-4"></div>
-                    </button>
-                    
-                    <button onclick="resetApp()" class="w-full md:w-auto text-zinc-500 hover:text-white text-xs py-2 transition">
-                        Baixar Outro Vídeo
                     </button>
                 </div>
             </div>
@@ -156,9 +118,7 @@
 
   </main>
 
-  <footer class="fixed bottom-6 text-center w-full text-zinc-700 text-[10px] tracking-[0.3em] pointer-events-none orbitron">
-    POWERED BY KUROMI TECH
-  </footer>
+  <footer class="fixed bottom-6 text-center w-full text-zinc-700 text-[10px] tracking-[0.3em] pointer-events-none orbitron">SYSTEM: KUROMI TECH</footer>
 
 <script>
 /* ================= CONFIGURAÇÃO ================= */
@@ -177,38 +137,25 @@ let foundFilename = '';
 /* =============== UI CONTROL =============== */
 function switchPlatform(platform) {
     currentPlatform = platform;
-    
-    // Atualizar botões
     document.querySelectorAll('.platform-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById(`btn-${platform}`).classList.add('active');
-    
-    // Atualizar Icone e Placeholder
     const input = document.getElementById('urlInput');
     const icon = document.getElementById('inputIcon');
     
     if(platform === 'insta') {
-        input.placeholder = "Cole o Link do Instagram...";
+        input.placeholder = "Link do Instagram...";
         icon.innerHTML = '<i class="fa-brands fa-instagram"></i>';
     } else {
-        input.placeholder = "Cole o Link do Threads...";
+        input.placeholder = "Link do Threads...";
         icon.innerHTML = '<i class="fa-brands fa-threads"></i>';
     }
+    // Ao trocar a plataforma, limpa o resultado anterior
+    resetUI(true);
 }
 
-// Auto-detecção ao colar link (USANDO URL NATIVO PARA MAIOR ROBUSTEZ)
 function detectPlatform(val) {
-    try {
-        const url = new URL(val);
-        const hostname = url.hostname;
-        
-        if (hostname.includes('threads.net')) {
-            switchPlatform('threads');
-        } else if (hostname.includes('instagram.com')) {
-            switchPlatform('insta');
-        }
-    } catch (e) {
-        // Ignora se não for uma URL válida
-    }
+    if(val.includes('threads.net')) switchPlatform('threads');
+    else if(val.includes('instagram.com')) switchPlatform('insta');
 }
 
 /* =============== LÓGICA PRINCIPAL =============== */
@@ -216,12 +163,9 @@ async function processDownload(){
     const input = document.getElementById('urlInput');
     const rawUrl = input.value.trim();
 
-    resetUI();
+    resetUI(false); // Não limpa o input na busca
 
-    if(!rawUrl) { 
-        showError('Por favor, insira um link válido! 💜'); 
-        return; 
-    }
+    if(!rawUrl) { showError('Insira um link válido! 💜'); return; }
 
     setSearchLoading(true);
 
@@ -230,45 +174,26 @@ async function processDownload(){
         const targetApiUrl = apiUrlBase + encodeURIComponent(rawUrl);
         const fetchUrl = PROXY_URL + encodeURIComponent(targetApiUrl);
 
-        console.log(`Buscando [${currentPlatform}]:`, targetApiUrl);
-
         const res = await fetch(fetchUrl);
+        if(!res.ok) throw new Error(`API Error: ${res.status}`);
+
+        const json = await res.json();
         
-        let json;
-        try {
-            // Tenta ler o JSON
-            json = await res.json();
-        } catch {
-            // Se falhar a leitura do JSON, trate como erro genérico de rede/API
-            throw new Error(`API retornou resposta ilegível ou formato inválido. Status: ${res.status}`);
-        }
-
-        /* --- TRATAMENTO DE ERRO ROBUSTO (Res.ok ou JSON de erro) --- */
-        if (!res.ok) {
-            // Se o status HTTP não for OK (2xx), tenta pegar a mensagem de erro do JSON
-            const apiErrorMsg = json.message || json.error || `Erro de Servidor: ${res.status}`;
-            throw new Error(`Falha na Requisição: ${apiErrorMsg}`);
-        }
-
-        /* --- LÓGICA DE EXTRAÇÃO (ADAPTADA PARA AS DUAS APIs) --- */
         let videoData = null;
 
         if (currentPlatform === 'insta') {
-            if (!json.data || !json.data.data || json.data.data.length < 1) {
-                throw new Error("Vídeo do Instagram não encontrado. Conteúdo privado?");
-            }
+            if (!json.data || !json.data.data || json.data.data.length < 1) throw new Error("Vídeo Insta não encontrado.");
             videoData = json.data.data[0];
         } 
         else if (currentPlatform === 'threads') {
-            if (!json.result || !json.result.media || json.result.media.length < 1) {
-                throw new Error("Vídeo do Threads não encontrado. Conteúdo privado?");
+            if (json.result && json.result.media && json.result.media.length > 0) {
+                videoData = json.result.media[0];
+            } else {
+                throw new Error("Vídeo Threads não encontrado.");
             }
-            videoData = json.result.media[0];
         }
 
-        if (!videoData || !videoData.url) {
-            throw new Error("URL de mídia inválida ou ausente na resposta da API.");
-        }
+        if (!videoData || !videoData.url) throw new Error("Link de vídeo inválido.");
 
         foundVideoUrl = videoData.url;
         foundFilename = `kuromi_${currentPlatform}_${Date.now()}.mp4`;
@@ -277,132 +202,115 @@ async function processDownload(){
 
     } catch (error) {
         console.error(error);
-        let msg = error.message;
-        if(msg.includes('Failed to fetch')) msg = "Erro de Rede (CORS/Proxy). Tente novamente.";
-        if(msg.includes('render')) msg = "API Kuromi Offline (Render). Tente novamente em 1 min.";
+        let msg = "Erro ao buscar vídeo. Tente novamente.";
+        if(error.message.includes("Failed to fetch")) msg = "API Offline no momento. Aguarde 1min.";
         showError(msg);
     } finally {
         setSearchLoading(false);
     }
 }
 
-/* =============== DOWNLOAD BLOB =============== */
-async function startBlobDownload() {
+/* =============== DOWNLOAD INTELIGENTE (FIX) =============== */
+async function smartDownload() {
     if(!foundVideoUrl) return;
 
     setDownloadLoading(true);
-    alert("Iniciando download... Arquivos muito grandes podem falhar devido à limitação de memória do navegador.");
+    document.getElementById('fallbackMsg').classList.add('hidden');
 
     try {
-        // O uso do proxy aqui pode aumentar a chance de falha em arquivos grandes.
+        // TENTATIVA 1: Download via Blob (Proxy) - O mais limpo
         const videoProxyUrl = PROXY_URL + encodeURIComponent(foundVideoUrl);
+        
+        // Timeout de 15 segundos
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-        const response = await fetch(videoProxyUrl);
-        if (!response.ok) throw new Error("Falha no download do arquivo.");
+        const response = await fetch(videoProxyUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) throw new Error("Falha Proxy");
 
         const blob = await response.blob();
         const tempUrl = window.URL.createObjectURL(blob);
+        triggerDownload(tempUrl, foundFilename);
+        window.URL.revokeObjectURL(tempUrl);
         
+        // Se deu certo, termina aqui
+        setDownloadLoading(false);
+
+    } catch (error) {
+        console.warn("Método Blob falhou (CORS/Timeout), ativando Fallback.", error);
+        
+        // TENTATIVA 2 (FALLBACK FORÇADO): Ação do Usuário
+        // Precisamos que o usuário interaja novamente
         const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = tempUrl;
+        a.href = foundVideoUrl; // Link direto
+        a.target = '_blank'; // Abre nova aba (Única forma garantida no mobile)
         a.download = foundFilename;
         document.body.appendChild(a);
         a.click();
-        
-        window.URL.revokeObjectURL(tempUrl);
         a.remove();
+        
+        // Avisa o usuário sobre o redirecionamento ou ação extra
+        document.getElementById('fallbackMsg').classList.remove('hidden');
+        document.getElementById('fallbackMsg').innerText = "⚠️ Download bloqueado. O vídeo abriu em uma nova aba/tela. Toque e segure para salvar.";
 
-    } catch (error) {
-        console.error("Erro Blob:", error);
-        alert("Erro ao salvar o arquivo. Tente novamente.");
-    } finally {
         setDownloadLoading(false);
     }
 }
 
-/* =============== UTILITÁRIOS =============== */
+function triggerDownload(url, name) {
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+}
+
+/* =============== HELPERS DE UI =============== */
 function showResult(url) {
     const player = document.getElementById('previewPlayer');
-    const resArea = document.getElementById('resultArea');
-    
     player.src = url;
-    // Uso de textContent para segurança contra XSS
-    document.getElementById('resFilename').textContent = foundFilename; 
-    document.getElementById('platformTag').textContent = currentPlatform.toUpperCase(); 
-    
-    resArea.classList.remove('hidden');
-    resArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.getElementById('platformTag').innerText = currentPlatform.toUpperCase();
+    document.getElementById('resultArea').classList.remove('hidden');
+    document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function showError(msg) {
     const el = document.getElementById('errorText');
     const box = document.getElementById('errorMsg');
-    // Uso de textContent para segurança contra XSS
-    el.textContent = msg; 
+    el.innerText = msg;
     box.classList.remove('hidden');
-    box.classList.add('animate-pulse');
-    setTimeout(() => box.classList.remove('animate-pulse'), 500);
 }
 
-function resetUI() {
+function resetUI(clearInput = true) {
     document.getElementById('errorMsg').classList.add('hidden');
     document.getElementById('resultArea').classList.add('hidden');
     document.getElementById('previewPlayer').pause();
     document.getElementById('previewPlayer').src = "";
-}
-
-function resetApp() {
-    resetUI();
-    document.getElementById('urlInput').value = "";
+    document.getElementById('fallbackMsg').classList.add('hidden');
+    if (clearInput) document.getElementById('urlInput').value = "";
 }
 
 function setSearchLoading(isLoading) {
     const btn = document.getElementById('mainBtn');
     const txt = document.getElementById('btnText');
     const load = document.getElementById('btnLoader');
-    
-    if(isLoading) {
-        txt.classList.add('hidden');
-        load.classList.remove('hidden');
-        btn.disabled = true;
-        btn.classList.add('opacity-70');
-    } else {
-        txt.classList.remove('hidden');
-        load.classList.add('hidden');
-        btn.disabled = false;
-        btn.classList.remove('opacity-70');
-    }
+    if(isLoading) { txt.classList.add('hidden'); load.classList.remove('hidden'); btn.disabled = true; btn.classList.add('opacity-70'); }
+    else { txt.classList.remove('hidden'); load.classList.add('hidden'); btn.disabled = false; btn.classList.remove('opacity-70'); }
 }
 
 function setDownloadLoading(isLoading) {
     const btn = document.getElementById('btnDownloadFile');
     const txt = document.getElementById('dlBtnText');
     const load = document.getElementById('dlLoader');
-
-    if(isLoading) {
-        txt.innerText = "BAIXANDO...";
-        load.classList.remove('hidden');
-        btn.disabled = true;
-    } else {
-        txt.innerText = "SALVAR NO DISPOSITIVO";
-        load.classList.add('hidden');
-        btn.disabled = false;
-    }
+    if(isLoading) { txt.innerText = "TENTANDO SALVAR..."; load.classList.remove('hidden'); btn.disabled = true; }
+    else { txt.innerText = "SALVAR VÍDEO"; load.classList.add('hidden'); btn.disabled = false; }
 }
 
-// Enter key
-document.getElementById('urlInput').addEventListener('keypress', (e) => {
-    if(e.key === 'Enter') processDownload();
-});
-
-// Listener para erros no player para melhorar o feedback do usuário
-document.getElementById('previewPlayer').addEventListener('error', (e) => {
-    // Código 4 significa que a mídia não é suportada
-    if (e.target.error.code === 4) {
-        showError("O player não suporta este formato de vídeo. O download (SALVAR) ainda pode funcionar.");
-    }
-});
+document.getElementById('urlInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') processDownload(); });
 </script>
 </body>
 </html>
