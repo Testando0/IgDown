@@ -9,10 +9,10 @@
     
     <style>
         :root {
-            --primary: #dfa3ff; /* Lilás Kuromi */
-            --secondary: #ff00aa; /* Rosa Neon */
-            --dark: #050505; /* Preto Profundo */
-            --glass: rgba(20, 20, 20, 0.85);
+            --primary: #dfa3ff;
+            --secondary: #ff00aa;
+            --dark: #050505;
+            --glass: rgba(20, 20, 20, 0.9);
             --glow: 0 0 15px var(--primary);
         }
 
@@ -20,7 +20,6 @@
 
         body {
             background-color: var(--dark);
-            /* Fundo Cyberpunk estático para ser leve, pode trocar por gif se quiser */
             background-image: radial-gradient(circle at 50% 50%, #2a0e35 0%, #000000 90%);
             font-family: 'Poppins', sans-serif;
             color: white;
@@ -28,95 +27,68 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden;
+            padding: 20px;
         }
 
         .container {
             position: relative;
-            width: 90%;
+            width: 100%;
             max-width: 480px;
             background: var(--glass);
             backdrop-filter: blur(12px);
             border: 1px solid var(--primary);
             border-radius: 20px;
-            padding: 40px 25px;
-            box-shadow: var(--glow), inset 0 0 30px rgba(223, 163, 255, 0.05);
+            padding: 30px 20px;
+            box-shadow: var(--glow);
             text-align: center;
-            transition: transform 0.3s ease;
         }
 
-        /* Cabeçalho */
         h1 {
             font-family: 'Orbitron', sans-serif;
             font-size: 1.8rem;
-            text-transform: uppercase;
             background: linear-gradient(90deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 5px;
-            text-shadow: 0 0 20px rgba(223, 163, 255, 0.4);
         }
 
         .skull-icon {
-            font-size: 3.5rem;
+            font-size: 3rem;
             color: var(--primary);
-            margin-bottom: 15px;
-            display: inline-block;
+            margin-bottom: 10px;
             animation: pulse 3s infinite;
-            filter: drop-shadow(0 0 5px var(--secondary));
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
-        p.subtitle {
-            color: #888;
-            font-size: 0.85rem;
-            margin-bottom: 30px;
-        }
-
-        /* Inputs */
-        .input-box {
-            position: relative;
-            margin-bottom: 20px;
-        }
+        .input-box { margin: 20px 0; }
 
         input {
             width: 100%;
-            padding: 16px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid #333;
-            border-radius: 12px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #444;
+            border-radius: 10px;
             color: var(--primary);
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
             outline: none;
-            transition: 0.3s;
         }
 
-        input:focus {
-            border-color: var(--secondary);
-            box-shadow: 0 0 10px rgba(255, 0, 170, 0.3);
-        }
+        input:focus { border-color: var(--secondary); }
 
-        /* Botão */
+        /* Botão Principal */
         .btn-glitch {
             width: 100%;
-            padding: 16px;
+            padding: 15px;
             background: transparent;
             border: 1px solid var(--primary);
             color: var(--primary);
             font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            font-size: 1rem;
+            font-weight: bold;
             cursor: pointer;
-            border-radius: 12px;
-            text-transform: uppercase;
+            border-radius: 10px;
             transition: 0.3s;
-            position: relative;
-            overflow: hidden;
+            text-transform: uppercase;
         }
 
         .btn-glitch:hover {
@@ -125,173 +97,185 @@
             box-shadow: 0 0 20px var(--primary);
         }
 
-        /* Loader & Resultados */
-        .loader {
-            display: none;
-            margin-top: 20px;
-            font-size: 1.5rem;
-            color: var(--secondary);
-            animation: spin 1s linear infinite;
+        .btn-glitch:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        #result-area {
-            display: none;
-            margin-top: 25px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 20px;
-            animation: fadeIn 0.5s ease;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Área de Resultado */
+        #result-area { display: none; margin-top: 20px; border-top: 1px solid #333; padding-top: 20px; }
 
         video {
             width: 100%;
-            max-height: 400px;
-            border-radius: 12px;
+            border-radius: 10px;
             border: 1px solid #333;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            background: #000;
+            margin-bottom: 15px;
         }
 
-        .download-btn {
-            display: block;
-            margin-top: 15px;
+        /* Botão de Download Direto */
+        .download-action-btn {
+            width: 100%;
+            padding: 12px;
             background: var(--secondary);
             color: white;
-            padding: 12px;
+            border: none;
             border-radius: 8px;
-            text-decoration: none;
-            font-size: 0.9rem;
             font-weight: bold;
-            transition: 0.3s;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-        .download-btn:hover { background: #d6008f; }
+        
+        .download-action-btn:hover { background: #d6008f; }
 
-        .error-msg {
-            color: #ff4444;
-            margin-top: 15px;
-            font-size: 0.85rem;
+        .loader, .dl-loader {
             display: none;
-            text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+            color: var(--secondary);
+            margin: 10px auto;
+            font-size: 1.5rem;
+            animation: spin 1s linear infinite;
         }
+        
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        footer {
-            margin-top: 40px;
-            font-size: 0.7rem;
-            color: #444;
-            letter-spacing: 2px;
-        }
+        .error-msg { color: #ff4444; margin-top: 10px; font-size: 0.9rem; display: none; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="skull-icon"><i class="fas fa-skull-crossbones"></i></div>
+        <div class="skull-icon"><i class="fas fa-skull"></i></div>
         <h1>Kuromi DL</h1>
-        <p class="subtitle">Sistema v2.0 // Instagram Downloader</p>
+        <p style="color:#888; font-size:0.8rem;">Cole o link e baixe direto.</p>
 
         <div class="input-box">
-            <input type="text" id="instaUrl" placeholder="Cole o link do Reel aqui...">
+            <input type="text" id="instaUrl" placeholder="Link do Reel aqui...">
         </div>
 
-        <button class="btn-glitch" onclick="fetchVideo()">
-            <i class="fas fa-download"></i> Iniciar Download
+        <button class="btn-glitch" id="btnSearch" onclick="fetchVideoMetadata()">
+            <i class="fas fa-search"></i> Buscar Vídeo
         </button>
-
-        <div class="loader" id="loader"><i class="fas fa-circle-notch"></i></div>
+        
+        <div class="loader" id="searchLoader"><i class="fas fa-circle-notch"></i></div>
         <p class="error-msg" id="errorMsg"></p>
 
         <div id="result-area">
-            <video id="videoPlayer" controls loop playsinline>
-                Seu navegador não suporta vídeo.
-            </video>
-            <a id="downloadLink" href="#" class="download-btn" target="_blank">
-                <i class="fas fa-save"></i> Salvar Vídeo
-            </a>
+            <video id="videoPlayer" controls playsinline></video>
+            
+            <button class="download-action-btn" id="btnDownloadFinal" onclick="downloadFile()">
+                <i class="fas fa-file-download"></i> BAIXAR ARQUIVO
+            </button>
+            
+            <div class="dl-loader" id="dlLoader"><i class="fas fa-cog"></i> Processando Download...</div>
         </div>
-
-        <footer>KUROMI TECH SYSTEM</footer>
     </div>
 
     <script>
-        async function fetchVideo() {
+        let currentVideoUrl = ""; // Variável para guardar a URL do vídeo encontrado
+
+        // PASSO 1: Buscar os dados do vídeo na API
+        async function fetchVideoMetadata() {
             const input = document.getElementById('instaUrl');
-            const loader = document.getElementById('loader');
+            const searchLoader = document.getElementById('searchLoader');
             const resultArea = document.getElementById('result-area');
             const errorMsg = document.getElementById('errorMsg');
             const videoPlayer = document.getElementById('videoPlayer');
-            const downloadLink = document.getElementById('downloadLink');
 
             const url = input.value.trim();
 
-            // 1. Limpeza de Estado
+            // Resetar tela
             errorMsg.style.display = 'none';
             resultArea.style.display = 'none';
-            videoPlayer.pause();
             videoPlayer.src = "";
+            currentVideoUrl = "";
 
-            // 2. Validação
             if (!url) {
                 showError("*Insira O Link Do Video Que Deseja Baixar 😉*");
                 return;
             }
 
-            // 3. Iniciar Carregamento
-            loader.style.display = 'block';
+            searchLoader.style.display = 'block';
 
             try {
-                // URL Original da API do Case
                 const apiUrl = `https://kuromi-system-tech.onrender.com/api/insta?url=${encodeURIComponent(url)}`;
-                
-                // SOLUÇÃO DO ERRO: Usando corsproxy.io para evitar bloqueio do navegador
                 const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`;
 
-                console.log("Tentando conectar em:", apiUrl);
-
                 const response = await fetch(proxyUrl);
-                
-                if (!response.ok) {
-                    throw new Error(`Erro HTTP: ${response.status}`);
-                }
+                if (!response.ok) throw new Error("Erro na API");
 
                 const json = await response.json();
-                console.log("Resposta recebida:", json);
 
-                // 4. Validação da Resposta (Igual ao Case)
-                if (!json || !json.data || !Array.isArray(json.data.data)) {
-                    throw new Error("*Não Encontrei O Vídeo, Sinto Muito 🙁*");
+                if (!json || !json.data || !Array.isArray(json.data.data) || json.data.data.length < 1) {
+                    throw new Error("*Não Encontrei O Vídeo 🙁*");
                 }
 
-                const mediaArray = json.data.data;
-                if (mediaArray.length < 1) {
-                    throw new Error("*O Link Enviado Não Corresponde A Nenhuma Publicação 🙁*");
-                }
+                // Sucesso: Guardamos a URL e mostramos o preview
+                const videoData = json.data.data[0];
+                currentVideoUrl = videoData.url;
 
-                // 5. Extração dos Dados
-                const videoData = mediaArray[0];
-                const mediaURL = videoData.url;
-
-                // 6. Exibir Resultado
-                videoPlayer.src = mediaURL;
-                downloadLink.href = mediaURL;
+                videoPlayer.src = currentVideoUrl;
                 
-                loader.style.display = 'none';
+                searchLoader.style.display = 'none';
                 resultArea.style.display = 'block';
 
             } catch (error) {
-                console.error("Erro no sistema:", error);
-                loader.style.display = 'none';
-                
-                let message = "*AAH NÃO!! DEU ERRO 🙁💔*";
-                
-                // Tentativa de diagnóstico amigável
-                if (error.message.includes("Failed to fetch")) {
-                    message = "*Erro de Conexão: A API da Kuromi pode estar dormindo (Render). Tente de novo em 30 segundos.*";
-                } else if (error.message.includes("*")) {
-                    message = error.message;
-                }
+                console.error(error);
+                searchLoader.style.display = 'none';
+                showError("*Erro ao buscar. Tente novamente em 1 min (API dormindo?)*");
+            }
+        }
 
-                showError(message);
+        // PASSO 2: Forçar o download do arquivo (Blob)
+        async function downloadFile() {
+            if (!currentVideoUrl) return;
+
+            const btn = document.getElementById('btnDownloadFinal');
+            const dlLoader = document.getElementById('dlLoader');
+
+            // Mudar estado visual
+            btn.style.display = 'none';
+            dlLoader.style.display = 'block';
+            dlLoader.innerHTML = '<i class="fas fa-cog fa-spin"></i> Baixando Arquivo...';
+
+            try {
+                // Usamos o Proxy TAMBÉM para o arquivo de vídeo, para evitar erro de CORS do Instagram
+                const proxyFileUrl = `https://corsproxy.io/?${encodeURIComponent(currentVideoUrl)}`;
+                
+                const response = await fetch(proxyFileUrl);
+                
+                if (!response.ok) throw new Error("Falha ao baixar o arquivo bruto");
+
+                // Converte a resposta em um "Blob" (arquivo na memória RAM)
+                const blob = await response.blob();
+                
+                // Cria uma URL temporária para esse Blob
+                const tempUrl = window.URL.createObjectURL(blob);
+                
+                // Cria um link invisível e clica nele
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = tempUrl;
+                a.download = `kuromi_video_${Date.now()}.mp4`; // Nome do arquivo
+                
+                document.body.appendChild(a);
+                a.click();
+                
+                // Limpeza
+                window.URL.revokeObjectURL(tempUrl);
+                document.body.removeChild(a);
+
+                // Restaura o botão
+                dlLoader.style.display = 'none';
+                btn.style.display = 'flex';
+
+            } catch (error) {
+                console.error("Erro no download:", error);
+                dlLoader.style.display = 'none';
+                btn.style.display = 'flex';
+                alert("Erro ao baixar o arquivo direto. O Instagram pode ter bloqueado o IP do proxy. Tente novamente.");
             }
         }
 
@@ -299,11 +283,6 @@
             const el = document.getElementById('errorMsg');
             el.innerText = msg;
             el.style.display = 'block';
-            // Pequeno efeito de tremor para feedback visual
-            const box = document.querySelector('.container');
-            box.style.transform = "translateX(5px)";
-            setTimeout(() => box.style.transform = "translateX(-5px)", 100);
-            setTimeout(() => box.style.transform = "translateX(0)", 200);
         }
     </script>
 </body>
