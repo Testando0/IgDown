@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Kuromi Downloader | Premium</title>
+  <title>KuromiDownloader</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/hls.js@latest"></script>
@@ -77,7 +77,7 @@
       <span class="text-white orbitron">Kuromi<span class="text-purple-400">DL</span></span>
     </div>
     <div class="text-[10px] font-medium text-zinc-500 border border-zinc-800 px-3 py-1 rounded-full bg-zinc-900/50 tracking-widest">
-      SYSTEM V2.0
+      Redzin
     </div>
   </nav>
 
@@ -85,9 +85,9 @@
     
     <div class="text-center mb-10 animate-fade-up">
       <h1 class="text-4xl md:text-6xl font-bold mb-4 text-white orbitron drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">
-        Baixe <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">Reels</span>
+        Baixe <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">Reels E Storys</span>
       </h1>
-      <p class="text-zinc-400 text-lg font-light">Cole o link, baixe sem redirecionar.</p>
+      <p class="text-zinc-400 text-lg font-light">Cole O Link Abaixo.</p>
     </div>
 
     <div class="dark-glass rounded-2xl p-2 mb-8 animate-fade-up glow-focus transition-all duration-300" style="animation-delay: 0.1s;">
@@ -95,7 +95,7 @@
         <div class="absolute left-4 text-purple-500 text-xl"><i class="fa-brands fa-instagram"></i></div>
         
         <input type="text" id="urlInput" 
-          placeholder="Cole o Link do Instagram Aqui..." 
+          placeholder="Cole O Link Aqui..." 
           class="w-full bg-transparent border-none text-zinc-100 placeholder-zinc-600 px-12 py-4 focus:ring-0 focus:outline-none text-lg font-light orbitron">
         
         <div class="absolute right-2 flex items-center gap-2">
@@ -139,13 +139,13 @@
 
     <div id="errorMsg" class="hidden mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-3 animate-fade-up backdrop-blur-md">
       <i class="fa-solid fa-circle-exclamation text-red-500"></i>
-      <span id="errorText" class="text-red-200 text-sm font-medium">Erro ao processar.</span>
+      <span id="errorText" class="text-red-200 text-sm font-medium">Erro Ao Processar.</span>
     </div>
 
   </main>
 
   <footer class="fixed bottom-6 text-center w-full text-zinc-700 text-[10px] tracking-[0.3em] pointer-events-none orbitron">
-    POWERED BY KUROMI TECH
+    KUROMI SYSTEM
   </footer>
 
 <script>
@@ -182,7 +182,7 @@ async function processDownload(){
     resetUI();
 
     if(!rawUrl) { 
-        showError('Por favor, insira um link válido! 💜'); 
+        showError('Por Favor, Insira Um Link Válido! 💜'); 
         return; 
     }
 
@@ -203,12 +203,12 @@ async function processDownload(){
 
         // Lógica de Validação do seu Case Original
         if (!json || !json.data || !Array.isArray(json.data.data)) {
-            throw new Error("Não encontrei o vídeo. Link privado ou inválido 🙁");
+            throw new Error("Não Encontrei O Vídeo. Link Privado Ou Inválido 🙁");
         }
         
         const mediaArray = json.data.data;
         if (mediaArray.length < 1) {
-            throw new Error("Nenhuma mídia encontrada nesse link 🙁");
+            throw new Error("Nenhuma Mídia Encontrada Nesse Link 🙁");
         }
 
         // Sucesso! Pegamos o primeiro vídeo
@@ -224,9 +224,9 @@ async function processDownload(){
         
         // Tratamento amigável de erros comuns
         if(msg.includes('Failed to fetch')) {
-            msg = "A API da Kuromi está dormindo (Render). Tente de novo em 1 min! 💤";
+            msg = "A API Da Kuromi Está Dormindo. Tente De Novo Em 1 min! 💤";
         } else if (!msg.includes("🙁")) {
-            msg = "Ocorreu um erro desconhecido no sistema. 💔";
+            msg = "Ocorreu Um Erro Desconhecido No Sistema. 💔";
         }
         
         showError(msg);
@@ -247,7 +247,7 @@ async function startBlobDownload() {
         const videoProxyUrl = PROXY_URL + encodeURIComponent(foundVideoUrl);
 
         const response = await fetch(videoProxyUrl);
-        if (!response.ok) throw new Error("Falha ao baixar o arquivo bruto.");
+        if (!response.ok) throw new Error("Falha Ao Baixar O Vídeo.");
 
         // Transforma em Blob (Arquivo na memória RAM)
         const blob = await response.blob();
@@ -270,7 +270,7 @@ async function startBlobDownload() {
 
     } catch (error) {
         console.error("Erro no download blob:", error);
-        alert("Erro ao salvar arquivo. O Instagram pode ter bloqueado o proxy temporariamente. Tente novamente.");
+        alert("Erro Ao Salvar Vídeo. O Instagram Pode Ter Bloqueado O Proxy Temporariamente. Tente Novamente.");
     } finally {
         setDownloadLoading(false);
     }
