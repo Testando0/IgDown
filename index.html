@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Kuromi Downloader | Button Download Fix</title>
+  <title>Kuromi Downloader | Fix Definitivo</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   
@@ -50,7 +50,7 @@
       </div>
       <span class="text-white orbitron">Kuromi<span class="text-purple-400">DL</span></span>
     </div>
-    <div class="text-[10px] font-medium text-zinc-500 border border-zinc-800 px-3 py-1 rounded-full bg-zinc-900/50 tracking-widest">BUTTON FIX</div>
+    <div class="text-[10px] font-medium text-zinc-500 border border-zinc-800 px-3 py-1 rounded-full bg-zinc-900/50 tracking-widest">PARSING FIX</div>
   </nav>
 
   <main class="w-full max-w-2xl mt-20 relative z-0">
@@ -155,11 +155,46 @@ function switchPlatform(platform) {
 }
 
 function detectPlatform(rawUrl) {
-    // FUNÇÃO agora é chamada APENAS em processDownload
     if(rawUrl.includes('threads.net')) return 'threads';
     if(rawUrl.includes('instagram.com')) return 'insta';
-    return currentPlatform; // Mantém a plataforma selecionada se não for detectado
+    return currentPlatform;
 }
+
+
+// NOVO MÉTODO DE PARSING ROBUSTO
+function extractVideoUrl(json, platform) {
+    let url = null;
+
+    if (platform === 'insta') {
+        // Tenta 1: Estrutura padrão (data.data[0].url)
+        if (json.data && json.data.data && json.data.data.length > 0 && json.data.data[0].url) {
+            url = json.data.data[0].url;
+        } 
+    } 
+    else if (platform === 'threads') {
+        // Tenta 1: Estrutura padrão (result.media[0].url)
+        if (json.result && json.result.media && json.result.media.length > 0 && json.result.media[0].url) {
+            url = json.result.media[0].url;
+        } 
+        // Tenta 2: Busca recursiva simples em caso de alteração no nome da chave
+        else if (json.result) {
+            function findUrlRecursively(obj) {
+                if (typeof obj !== 'object' || obj === null) return null;
+                if (obj.url && obj.url.includes('cdn')) return obj.url;
+                for (const key in obj) {
+                    const found = findUrlRecursively(obj[key]);
+                    if (found) return found;
+                }
+                return null;
+            }
+            url = findUrlRecursively(json.result);
+        }
+    }
+
+    if (url && url.length > 10) return url;
+    return null;
+}
+
 
 /* =============== LÓGICA PRINCIPAL =============== */
 async function processDownload(){
@@ -173,9 +208,8 @@ async function processDownload(){
     setSearchLoading(true);
 
     try {
-        // Auto-detecção no momento de processar (melhor para a colagem)
         const detectedPlatform = detectPlatform(rawUrl);
-        switchPlatform(detectedPlatform); // Atualiza o UI para a plataforma detectada
+        switchPlatform(detectedPlatform);
         
         const apiUrlBase = APIS[currentPlatform];
         const targetApiUrl = apiUrlBase + encodeURIComponent(rawUrl);
@@ -185,23 +219,15 @@ async function processDownload(){
 
         const json = await res.json();
         
-        let videoData = null;
+        // NOVO MÉTODO: Tenta extrair a URL de forma robusta
+        const videoUrl = extractVideoUrl(json, currentPlatform);
 
-        if (currentPlatform === 'insta') {
-            if (!json.data || !json.data.data || json.data.data.length < 1) throw new Error("Vídeo Insta não encontrado.");
-            videoData = json.data.data[0];
-        } 
-        else if (currentPlatform === 'threads') {
-            if (json.result && json.result.media && json.result.media.length > 0) {
-                videoData = json.result.media[0];
-            } else {
-                throw new Error("Vídeo Threads não encontrado.");
-            }
+        if (!videoUrl) {
+            // Este erro agora será lançado se NENHUMA das estruturas de parsing funcionar
+            throw new Error("Não foi possível extrair a URL do vídeo (API/Link inválido).");
         }
 
-        if (!videoData || !videoData.url) throw new Error("Link de vídeo inválido.");
-
-        foundVideoUrl = videoData.url;
+        foundVideoUrl = videoUrl;
         foundFilename = `kuromi_${currentPlatform}_${Date.now()}.mp4`;
 
         showResult(foundVideoUrl);
@@ -210,6 +236,8 @@ async function processDownload(){
         console.error(error);
         let msg = "Erro ao buscar vídeo. Tente novamente.";
         if(error.message.includes("Failed to fetch")) msg = "API Offline no momento. Aguarde 1min.";
+        if(error.message.includes("Não foi possível")) msg = `Erro: ${error.message}`;
+        
         showError(msg);
     } finally {
         setSearchLoading(false);
@@ -223,7 +251,6 @@ function smartDownload() {
     setDownloadLoading(true);
     document.getElementById('fallbackMsg').classList.add('hidden');
 
-    // Tenta usar a técnica do link de download simples.
     try {
         const a = document.createElement('a');
         a.style.display = 'none';
@@ -234,15 +261,12 @@ function smartDownload() {
         a.click();
         a.remove();
         
-        // Simula um tempo de espera para ver se o navegador inicia o download
         setTimeout(() => {
-            // Se o download não for detectado e o URL for Threads, a probabilidade é de falha.
             if (currentPlatform === 'threads') {
                  document.getElementById('fallbackMsg').classList.remove('hidden');
             }
             setDownloadLoading(false);
         }, 1500);
-
 
     } catch (error) {
         console.error("Tentativa de download pelo botão falhou:", error);
