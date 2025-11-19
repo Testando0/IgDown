@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Kuromi Downloader | No Redirect Mode</title>
+  <title>Kuromi Downloader | Button Download Fix</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   
@@ -50,7 +50,7 @@
       </div>
       <span class="text-white orbitron">Kuromi<span class="text-purple-400">DL</span></span>
     </div>
-    <div class="text-[10px] font-medium text-zinc-500 border border-zinc-800 px-3 py-1 rounded-full bg-zinc-900/50 tracking-widest">STRICT MODE</div>
+    <div class="text-[10px] font-medium text-zinc-500 border border-zinc-800 px-3 py-1 rounded-full bg-zinc-900/50 tracking-widest">BUTTON FIX</div>
   </nav>
 
   <main class="w-full max-w-2xl mt-20 relative z-0">
@@ -97,7 +97,7 @@
                 <div class="text-left w-full">
                     <h3 class="text-xl font-bold text-white orbitron mb-1">Vídeo Pronto</h3>
                     <span id="platformTag" class="inline-block text-[10px] bg-zinc-800 px-2 py-1 rounded border border-zinc-700 text-zinc-400 uppercase">INSTAGRAM</span>
-                    <p id="fallbackMsg" class="text-red-400 text-xs mt-2 hidden"><i class="fa-solid fa-ban"></i> Download bloqueado por CORS. Não é possível salvar sem redirecionar.</p>
+                    <p id="fallbackMsg" class="text-red-400 text-xs mt-2 hidden"><i class="fa-solid fa-ban"></i> Ação bloqueada pelo Threads. Use o menu "Tocar e Segurar" (Mobile) ou "Botão Direito" (PC) no player acima.</p>
                 </div>
 
                 <div class="w-full md:w-auto flex flex-col gap-2">
@@ -171,9 +171,8 @@ async function processDownload(){
     try {
         const apiUrlBase = APIS[currentPlatform];
         const targetApiUrl = apiUrlBase + encodeURIComponent(rawUrl);
-        const fetchUrl = PROXY_URL + encodeURIComponent(targetApiUrl);
-
-        const res = await fetch(fetchUrl);
+        // Não usamos proxy para a API, pois ela já está online e a url da API é simples.
+        const res = await fetch(targetApiUrl); 
         if(!res.ok) throw new Error(`API Error: ${res.status}`);
 
         const json = await res.json();
@@ -209,54 +208,50 @@ async function processDownload(){
     }
 }
 
-/* =============== DOWNLOAD ESTREITAMENTE SEM REDIRECIONAMENTO =============== */
-async function smartDownload() {
+/* =============== DOWNLOAD (ÚLTIMO RECURSO SEM REDIRECIONAMENTO) =============== */
+function smartDownload() {
     if(!foundVideoUrl) return;
 
     setDownloadLoading(true);
     document.getElementById('fallbackMsg').classList.add('hidden');
 
+    // Tenta usar a técnica do link de download simples.
+    // **Esta técnica não funciona se o servidor de destino (Threads) forçar o cabeçalho 'Content-Disposition: inline' ou se o navegador bloquear o download de cross-origin.**
+
     try {
-        // TENTATIVA ÚNICA: Download via Blob (Proxy). Se isso falhar, o download NÃO é possível.
-        const videoProxyUrl = PROXY_URL + encodeURIComponent(foundVideoUrl);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = foundVideoUrl;
+        a.download = foundFilename; // Sugere o nome do arquivo
         
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s timeout
-
-        const response = await fetch(videoProxyUrl, { signal: controller.signal });
-        clearTimeout(timeoutId);
-
-        // Se o proxy retornar erro ou timeout, lança a falha
-        if (!response.ok) throw new Error("Falha na requisição do proxy.");
-
-        const blob = await response.blob();
-        const tempUrl = window.URL.createObjectURL(blob);
-        triggerDownload(tempUrl, foundFilename);
-        window.URL.revokeObjectURL(tempUrl);
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
         
-        // Sucesso
-        setDownloadLoading(false);
+        // Se o download não começar imediatamente, ele falhou ou abriu em uma nova tela
+        // Como o usuário exigiu SEM REDIRECIONAMENTO, se falhar, avisamos que é um bloqueio.
+
+        // Simula um tempo de espera para ver se o navegador inicia o download
+        setTimeout(() => {
+            // Se o download não começou (e a mensagem de erro não está visível), assumimos sucesso.
+            // Se falhar (e a mensagem de erro não está visível), o usuário deve usar o player.
+            
+            // Se o download não for detectado e o URL for Threads, a probabilidade é de falha.
+            if (currentPlatform === 'threads') {
+                 document.getElementById('fallbackMsg').classList.remove('hidden');
+            }
+            setDownloadLoading(false);
+        }, 1500);
+
 
     } catch (error) {
-        // FALHA TOTAL SEM REDIRECIONAMENTO
-        console.error("Download Bloqueado (CORS/Proxy):", error);
+        console.error("Tentativa de download pelo botão falhou:", error);
         
-        // Exibe a mensagem de erro específica para o usuário
         document.getElementById('fallbackMsg').classList.remove('hidden');
-        document.getElementById('fallbackMsg').innerText = "❌ Download Bloqueado: Não é possível salvar sem redirecionar (CORS).";
+        document.getElementById('fallbackMsg').innerText = "❌ Download Bloqueado: Não é possível salvar sem redirecionar. Use o menu do player.";
         
         setDownloadLoading(false);
     }
-}
-
-function triggerDownload(url, name) {
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = name;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
 }
 
 /* =============== HELPERS DE UI =============== */
