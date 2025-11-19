@@ -1,289 +1,344 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KUROMI DOWNLOADER | InstaReels</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kuromi Downloader | Premium</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/hls.js@latest"></script>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root { 
+        --neon-purple:#a855f7; 
+        --neon-pink:#ff00aa; 
+        --dark-bg:#050505; 
+    }
     
-    <style>
-        :root {
-            --primary: #dfa3ff;
-            --secondary: #ff00aa;
-            --dark: #050505;
-            --glass: rgba(20, 20, 20, 0.9);
-            --glow: 0 0 15px var(--primary);
-        }
+    body { 
+        font-family:'Outfit',sans-serif; 
+        background:var(--dark-bg); 
+        min-height:100vh; 
+        color:#e4e4e7;
+        background-image: 
+            radial-gradient(circle at 50% 0%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 0% 100%, rgba(255, 0, 170, 0.1) 0%, transparent 50%); 
+        overflow-x: hidden;
+    }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* Efeito de Vidro (Glassmorphism) */
+    .dark-glass { 
+        background: rgba(20, 20, 20, 0.7); 
+        backdrop-filter: blur(12px); 
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(168, 85, 247, 0.2); 
+        box-shadow: 0 0 30px rgba(0,0,0,0.5); 
+    }
 
-        body {
-            background-color: var(--dark);
-            background-image: radial-gradient(circle at 50% 50%, #2a0e35 0%, #000000 90%);
-            font-family: 'Poppins', sans-serif;
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+    .glow-focus:focus-within { 
+        box-shadow: 0 0 25px rgba(168,85,247,0.25); 
+        border-color: rgba(168,85,247,0.5); 
+    }
 
-        .container {
-            position: relative;
-            width: 100%;
-            max-width: 480px;
-            background: var(--glass);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--primary);
-            border-radius: 20px;
-            padding: 30px 20px;
-            box-shadow: var(--glow);
-            text-align: center;
-        }
+    /* Animações */
+    .loader { 
+        border: 3px solid rgba(255,255,255,0.1); 
+        border-left-color: var(--neon-pink); 
+        border-radius: 50%; 
+        width: 24px; height: 24px; 
+        animation: spin 1s linear infinite; 
+    }
+    
+    @keyframes spin { 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
+    @keyframes fadeUp { from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
+    
+    .animate-fade-up { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    
+    .orbitron { font-family: 'Orbitron', sans-serif; }
 
-        h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.8rem;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
-        }
-
-        .skull-icon {
-            font-size: 3rem;
-            color: var(--primary);
-            margin-bottom: 10px;
-            animation: pulse 3s infinite;
-        }
-
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-
-        .input-box { margin: 20px 0; }
-
-        input {
-            width: 100%;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid #444;
-            border-radius: 10px;
-            color: var(--primary);
-            font-family: 'Orbitron', sans-serif;
-            outline: none;
-        }
-
-        input:focus { border-color: var(--secondary); }
-
-        /* Botão Principal */
-        .btn-glitch {
-            width: 100%;
-            padding: 15px;
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            font-family: 'Orbitron', sans-serif;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 10px;
-            transition: 0.3s;
-            text-transform: uppercase;
-        }
-
-        .btn-glitch:hover {
-            background: var(--primary);
-            color: #000;
-            box-shadow: 0 0 20px var(--primary);
-        }
-
-        .btn-glitch:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Área de Resultado */
-        #result-area { display: none; margin-top: 20px; border-top: 1px solid #333; padding-top: 20px; }
-
-        video {
-            width: 100%;
-            border-radius: 10px;
-            border: 1px solid #333;
-            margin-bottom: 15px;
-        }
-
-        /* Botão de Download Direto */
-        .download-action-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--secondary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .download-action-btn:hover { background: #d6008f; }
-
-        .loader, .dl-loader {
-            display: none;
-            color: var(--secondary);
-            margin: 10px auto;
-            font-size: 1.5rem;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        .error-msg { color: #ff4444; margin-top: 10px; font-size: 0.9rem; display: none; }
-    </style>
+    /* Player customizado */
+    video { 
+        border-radius: 12px; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+  </style>
 </head>
-<body>
 
-    <div class="container">
-        <div class="skull-icon"><i class="fas fa-skull"></i></div>
-        <h1>Kuromi DL</h1>
-        <p style="color:#888; font-size:0.8rem;">Cole o link e baixe direto.</p>
+<body class="flex flex-col items-center justify-center p-4 md:p-8">
 
-        <div class="input-box">
-            <input type="text" id="instaUrl" placeholder="Link do Reel aqui...">
-        </div>
+  <nav class="absolute top-0 left-0 w-full p-6 flex justify-between items-center max-w-7xl mx-auto z-10">
+    <div class="flex items-center gap-3 text-xl font-bold tracking-wider">
+      <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.5)]">
+        <i class="fa-solid fa-skull text-white text-lg"></i>
+      </div>
+      <span class="text-white orbitron">Kuromi<span class="text-purple-400">DL</span></span>
+    </div>
+    <div class="text-[10px] font-medium text-zinc-500 border border-zinc-800 px-3 py-1 rounded-full bg-zinc-900/50 tracking-widest">
+      SYSTEM V2.0
+    </div>
+  </nav>
 
-        <button class="btn-glitch" id="btnSearch" onclick="fetchVideoMetadata()">
-            <i class="fas fa-search"></i> Buscar Vídeo
-        </button>
-        
-        <div class="loader" id="searchLoader"><i class="fas fa-circle-notch"></i></div>
-        <p class="error-msg" id="errorMsg"></p>
-
-        <div id="result-area">
-            <video id="videoPlayer" controls playsinline></video>
-            
-            <button class="download-action-btn" id="btnDownloadFinal" onclick="downloadFile()">
-                <i class="fas fa-file-download"></i> BAIXAR ARQUIVO
-            </button>
-            
-            <div class="dl-loader" id="dlLoader"><i class="fas fa-cog"></i> Processando Download...</div>
-        </div>
+  <main class="w-full max-w-2xl mt-20 relative z-0">
+    
+    <div class="text-center mb-10 animate-fade-up">
+      <h1 class="text-4xl md:text-6xl font-bold mb-4 text-white orbitron drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+        Baixe <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">Reels</span>
+      </h1>
+      <p class="text-zinc-400 text-lg font-light">Cole o link, baixe sem redirecionar.</p>
     </div>
 
-    <script>
-        let currentVideoUrl = ""; // Variável para guardar a URL do vídeo encontrado
+    <div class="dark-glass rounded-2xl p-2 mb-8 animate-fade-up glow-focus transition-all duration-300" style="animation-delay: 0.1s;">
+      <div class="relative flex items-center">
+        <div class="absolute left-4 text-purple-500 text-xl"><i class="fa-brands fa-instagram"></i></div>
+        
+        <input type="text" id="urlInput" 
+          placeholder="Cole o Link do Instagram Aqui..." 
+          class="w-full bg-transparent border-none text-zinc-100 placeholder-zinc-600 px-12 py-4 focus:ring-0 focus:outline-none text-lg font-light orbitron">
+        
+        <div class="absolute right-2 flex items-center gap-2">
+          <button onclick="processDownload()" id="mainBtn" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg shadow-purple-900/40 flex items-center gap-2 hover:scale-105 active:scale-95">
+            <span id="btnText">BAIXAR</span>
+            <div id="btnLoader" class="loader hidden"></div>
+          </button>
+        </div>
+      </div>
+    </div>
 
-        // PASSO 1: Buscar os dados do vídeo na API
-        async function fetchVideoMetadata() {
-            const input = document.getElementById('instaUrl');
-            const searchLoader = document.getElementById('searchLoader');
-            const resultArea = document.getElementById('result-area');
-            const errorMsg = document.getElementById('errorMsg');
-            const videoPlayer = document.getElementById('videoPlayer');
+    <div id="resultArea" class="hidden animate-fade-up" style="animation-delay:0.2s;">
+      <div class="dark-glass rounded-2xl p-6 border border-zinc-800 relative overflow-hidden group">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+        
+        <div class="flex flex-col gap-6">
+            <div class="relative w-full rounded-xl overflow-hidden border border-zinc-700 bg-black shadow-2xl">
+                <video id="previewPlayer" class="w-full max-h-[450px]" controls playsinline></video>
+            </div>
 
-            const url = input.value.trim();
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-left w-full">
+                    <h3 class="text-xl font-bold text-white orbitron mb-1" id="resTitle">Sucesso!</h3>
+                    <p class="text-purple-400 text-xs uppercase tracking-widest" id="resFilename">video_kuromi.mp4</p>
+                </div>
 
-            // Resetar tela
-            errorMsg.style.display = 'none';
-            resultArea.style.display = 'none';
-            videoPlayer.src = "";
-            currentVideoUrl = "";
+                <div class="w-full md:w-auto flex flex-col gap-2">
+                    <button id="btnDownloadFile" onclick="startBlobDownload()" class="w-full md:w-auto bg-white text-black hover:bg-gray-200 px-6 py-3 rounded-lg font-bold text-center transition flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                        <i class="fa-solid fa-download"></i> <span id="dlBtnText">SALVAR NO DISPOSITIVO</span>
+                        <div id="dlLoader" class="loader hidden border-zinc-400 border-l-black w-4 h-4"></div>
+                    </button>
+                    
+                    <button onclick="resetApp()" class="w-full md:w-auto text-zinc-500 hover:text-white text-xs py-2 transition">
+                        Baixar Outro Vídeo
+                    </button>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
 
-            if (!url) {
-                showError("*Insira O Link Do Video Que Deseja Baixar 😉*");
-                return;
-            }
+    <div id="errorMsg" class="hidden mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-3 animate-fade-up backdrop-blur-md">
+      <i class="fa-solid fa-circle-exclamation text-red-500"></i>
+      <span id="errorText" class="text-red-200 text-sm font-medium">Erro ao processar.</span>
+    </div>
 
-            searchLoader.style.display = 'block';
+  </main>
 
-            try {
-                const apiUrl = `https://kuromi-system-tech.onrender.com/api/insta?url=${encodeURIComponent(url)}`;
-                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`;
+  <footer class="fixed bottom-6 text-center w-full text-zinc-700 text-[10px] tracking-[0.3em] pointer-events-none orbitron">
+    POWERED BY KUROMI TECH
+  </footer>
 
-                const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error("Erro na API");
+<script>
+/* ================= CONFIGURAÇÃO ================= */
+// URL do Proxy para evitar bloqueio de CORS (Necessário para download direto)
+const PROXY_URL = 'https://corsproxy.io/?';
 
-                const json = await response.json();
+// API da Kuromi (Do seu case original)
+const KUROMI_API = 'https://kuromi-system-tech.onrender.com/api/insta?url=';
 
-                if (!json || !json.data || !Array.isArray(json.data.data) || json.data.data.length < 1) {
-                    throw new Error("*Não Encontrei O Vídeo 🙁*");
-                }
+/* =============== VARIÁVEIS DE ESTADO ============== */
+let foundVideoUrl = ''; // Armazena o link direto do vídeo encontrado
 
-                // Sucesso: Guardamos a URL e mostramos o preview
-                const videoData = json.data.data[0];
-                currentVideoUrl = videoData.url;
+/* =============== ELEMENTOS DO DOM ================ */
+const urlInput = document.getElementById('urlInput');
+const mainBtn = document.getElementById('mainBtn');
+const btnText = document.getElementById('btnText');
+const btnLoader = document.getElementById('btnLoader');
+const resultArea = document.getElementById('resultArea');
+const errorMsg = document.getElementById('errorMsg');
+const errorText = document.getElementById('errorText');
+const previewPlayer = document.getElementById('previewPlayer');
+const btnDownloadFile = document.getElementById('btnDownloadFile');
+const dlBtnText = document.getElementById('dlBtnText');
+const dlLoader = document.getElementById('dlLoader');
 
-                videoPlayer.src = currentVideoUrl;
-                
-                searchLoader.style.display = 'none';
-                resultArea.style.display = 'block';
+/* =============== FUNÇÕES PRINCIPAIS =============== */
 
-            } catch (error) {
-                console.error(error);
-                searchLoader.style.display = 'none';
-                showError("*Erro ao buscar. Tente novamente em 1 min (API dormindo?)*");
-            }
+// 1. Processar Input e Buscar na API
+async function processDownload(){
+    const rawUrl = urlInput.value.trim();
+
+    // Resetar UI
+    resetUI();
+
+    if(!rawUrl) { 
+        showError('Por favor, insira um link válido! 💜'); 
+        return; 
+    }
+
+    setSearchLoading(true);
+
+    try {
+        // Monta a URL da API + Proxy
+        const targetApiUrl = KUROMI_API + encodeURIComponent(rawUrl);
+        const fetchUrl = PROXY_URL + encodeURIComponent(targetApiUrl);
+
+        console.log("Buscando em:", targetApiUrl);
+
+        const res = await fetch(fetchUrl);
+        
+        if(!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
+
+        const json = await res.json();
+
+        // Lógica de Validação do seu Case Original
+        if (!json || !json.data || !Array.isArray(json.data.data)) {
+            throw new Error("Não encontrei o vídeo. Link privado ou inválido 🙁");
+        }
+        
+        const mediaArray = json.data.data;
+        if (mediaArray.length < 1) {
+            throw new Error("Nenhuma mídia encontrada nesse link 🙁");
         }
 
-        // PASSO 2: Forçar o download do arquivo (Blob)
-        async function downloadFile() {
-            if (!currentVideoUrl) return;
+        // Sucesso! Pegamos o primeiro vídeo
+        const videoData = mediaArray[0];
+        foundVideoUrl = videoData.url;
 
-            const btn = document.getElementById('btnDownloadFinal');
-            const dlLoader = document.getElementById('dlLoader');
+        // Mostrar resultado
+        showResult(foundVideoUrl);
 
-            // Mudar estado visual
-            btn.style.display = 'none';
-            dlLoader.style.display = 'block';
-            dlLoader.innerHTML = '<i class="fas fa-cog fa-spin"></i> Baixando Arquivo...';
-
-            try {
-                // Usamos o Proxy TAMBÉM para o arquivo de vídeo, para evitar erro de CORS do Instagram
-                const proxyFileUrl = `https://corsproxy.io/?${encodeURIComponent(currentVideoUrl)}`;
-                
-                const response = await fetch(proxyFileUrl);
-                
-                if (!response.ok) throw new Error("Falha ao baixar o arquivo bruto");
-
-                // Converte a resposta em um "Blob" (arquivo na memória RAM)
-                const blob = await response.blob();
-                
-                // Cria uma URL temporária para esse Blob
-                const tempUrl = window.URL.createObjectURL(blob);
-                
-                // Cria um link invisível e clica nele
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = tempUrl;
-                a.download = `kuromi_video_${Date.now()}.mp4`; // Nome do arquivo
-                
-                document.body.appendChild(a);
-                a.click();
-                
-                // Limpeza
-                window.URL.revokeObjectURL(tempUrl);
-                document.body.removeChild(a);
-
-                // Restaura o botão
-                dlLoader.style.display = 'none';
-                btn.style.display = 'flex';
-
-            } catch (error) {
-                console.error("Erro no download:", error);
-                dlLoader.style.display = 'none';
-                btn.style.display = 'flex';
-                alert("Erro ao baixar o arquivo direto. O Instagram pode ter bloqueado o IP do proxy. Tente novamente.");
-            }
+    } catch (error) {
+        console.error(error);
+        let msg = error.message;
+        
+        // Tratamento amigável de erros comuns
+        if(msg.includes('Failed to fetch')) {
+            msg = "A API da Kuromi está dormindo (Render). Tente de novo em 1 min! 💤";
+        } else if (!msg.includes("🙁")) {
+            msg = "Ocorreu um erro desconhecido no sistema. 💔";
         }
+        
+        showError(msg);
+    } finally {
+        setSearchLoading(false);
+    }
+}
 
-        function showError(msg) {
-            const el = document.getElementById('errorMsg');
-            el.innerText = msg;
-            el.style.display = 'block';
-        }
-    </script>
+// 2. Download do Arquivo (Blob) - O Segredo para não redirecionar
+async function startBlobDownload() {
+    if(!foundVideoUrl) return;
+
+    setDownloadLoading(true);
+
+    try {
+        // Usamos o Proxy para baixar o arquivo de vídeo sem bloqueio do Instagram
+        // Se o link já tiver 'scontent', usamos proxy.
+        const videoProxyUrl = PROXY_URL + encodeURIComponent(foundVideoUrl);
+
+        const response = await fetch(videoProxyUrl);
+        if (!response.ok) throw new Error("Falha ao baixar o arquivo bruto.");
+
+        // Transforma em Blob (Arquivo na memória RAM)
+        const blob = await response.blob();
+        
+        // Cria link temporário
+        const tempUrl = window.URL.createObjectURL(blob);
+        const filename = `kuromi_video_${Date.now()}.mp4`;
+
+        // Força o clique no link temporário
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = tempUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        
+        // Limpeza
+        window.URL.revokeObjectURL(tempUrl);
+        a.remove();
+
+    } catch (error) {
+        console.error("Erro no download blob:", error);
+        alert("Erro ao salvar arquivo. O Instagram pode ter bloqueado o proxy temporariamente. Tente novamente.");
+    } finally {
+        setDownloadLoading(false);
+    }
+}
+
+/* =============== FUNÇÕES DE UI =============== */
+
+function showResult(url) {
+    previewPlayer.src = url;
+    resultArea.classList.remove('hidden');
+    // Rolar suavemente até o resultado
+    resultArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function showError(msg) {
+    errorText.innerText = msg;
+    errorMsg.classList.remove('hidden');
+    // Efeito de tremor
+    errorMsg.classList.add('animate-pulse');
+    setTimeout(() => errorMsg.classList.remove('animate-pulse'), 500);
+}
+
+function resetUI() {
+    errorMsg.classList.add('hidden');
+    resultArea.classList.add('hidden');
+    previewPlayer.pause();
+    previewPlayer.src = "";
+    foundVideoUrl = "";
+}
+
+function resetApp() {
+    resetUI();
+    urlInput.value = "";
+    urlInput.focus();
+}
+
+// Controle de Estado dos Botões
+function setSearchLoading(isLoading) {
+    if(isLoading) {
+        btnText.classList.add('hidden');
+        btnLoader.classList.remove('hidden');
+        mainBtn.disabled = true;
+        mainBtn.classList.add('opacity-70', 'cursor-not-allowed');
+    } else {
+        btnText.classList.remove('hidden');
+        btnLoader.classList.add('hidden');
+        mainBtn.disabled = false;
+        mainBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+    }
+}
+
+function setDownloadLoading(isLoading) {
+    if(isLoading) {
+        dlBtnText.innerText = "BAIXANDO...";
+        dlLoader.classList.remove('hidden');
+        btnDownloadFile.disabled = true;
+    } else {
+        dlBtnText.innerText = "SALVAR NO DISPOSITIVO";
+        dlLoader.classList.add('hidden');
+        btnDownloadFile.disabled = false;
+    }
+}
+
+// Atalho para tecla Enter
+urlInput.addEventListener('keypress', (e) => {
+    if(e.key === 'Enter') processDownload();
+});
+
+</script>
 </body>
 </html>
